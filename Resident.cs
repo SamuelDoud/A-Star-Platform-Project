@@ -8,13 +8,13 @@ namespace RockGarden
 {
     class Resident
     {
-        private bool isGravel;
-        private int width, depth, length;
-        public Resident(int width, int length, int depth, bool isGravel)
+        public bool isGravel;
+        public int width, height, length;
+        public Resident(int width, int length, int height, bool isGravel)
         {
             this.width = width;
             this.length = length;
-            this.depth = depth;
+            this.height = height;
             this.isGravel = isGravel;
         }
         public bool gravel()
