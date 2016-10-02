@@ -100,7 +100,6 @@ namespace RockGarden
                 this.grid[coordinate.Item1, coordinate.Item2].removeResident();
             }
             return true;
-
         }
 
         /// <summary>
