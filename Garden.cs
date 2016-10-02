@@ -18,7 +18,7 @@ namespace RockGarden
         {
             this.length = length;
             this.width = width;
-            this.grid = new Atom[width, length];
+            grid = new Atom[width, length];
         }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace RockGarden
         /// <returns>The Resident that occupies this square</returns>
         public Resident getResident(int x, int y)
         {
-            return this.grid[x, y].getResident();
+            return grid[x, y].getResident();
         }
 
         /// <summary>
@@ -62,14 +62,14 @@ namespace RockGarden
                     else
                     {
                         //delete the object here at all locations it exists
-                        this.removeObject(x, y);
+                        removeObject(x, y);
                     }
                 }
             }
             //add the resident to the grid at each point it would occupy based on its size
             foreach (Tuple<int, int> coordinate in pointsToAddTo)
             {
-                this.grid[coordinate.Item1, coordinate.Item2].setResident(newNeighbor, x, y);
+                grid[coordinate.Item1, coordinate.Item2].setResident(newNeighbor, x, y);
             }
             return true;
         }
@@ -87,7 +87,7 @@ namespace RockGarden
         /// coordinates.</returns>
         public bool removeObject(int x, int y)
         {
-            Resident evictee = this.grid[x, y].getResident();
+            Resident evictee = grid[x, y].getResident();
             if (evictee == null)
             {
                 //no Resident occupies this space
@@ -95,9 +95,9 @@ namespace RockGarden
             }
             //go through each Atom that contains this object
             foreach (Tuple<int, int> coordinate in getCoordinates(this.grid[x,y].getBaseX(),
-                this.grid[x, y].getBaseY(), evictee.width, evictee.length))
+                grid[x, y].getBaseY(), evictee.width, evictee.length))
             {
-                this.grid[coordinate.Item1, coordinate.Item2].removeResident();
+                grid[coordinate.Item1, coordinate.Item2].removeResident();
             }
             return true;
 
@@ -123,6 +123,25 @@ namespace RockGarden
                 }
             }
             return points;
+        }
+        /// <summary>
+        /// Get a string representation of the Rock Garden.
+        /// </summary>
+        /// <returns>A string which gives an ASCII art view of the rock garden</returns>
+        public override string ToString()
+        {
+            string gardenString = "";
+            for (int x = 0; x < width; x++)
+            {
+                //counting down as the (0, 0) is located in the bottom right corner
+                for (int y = length; y >= 0; y--)
+                {
+                    gardenString += grid[x, y].ToString();
+                }
+                //going to a new row so we will need a new line
+                gardenString += "\n";
+            }
+            return "";
         }
     }
 }
