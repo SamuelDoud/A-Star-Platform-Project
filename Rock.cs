@@ -17,7 +17,7 @@ namespace RockGarden
         /// </summary>
         public Rock(int width, int length): base(width, length, 1, false)
         {
-        
+            stringRepresentation = "R";
         }
 
     }

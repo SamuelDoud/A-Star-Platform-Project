@@ -10,6 +10,7 @@ namespace RockGarden
     {
         public bool isGravel;
         public int width, height, length;
+        public string stringRepresentation = " ";
         public Resident(int width, int length, int height, bool isGravel)
         {
             this.width = width;
@@ -24,6 +25,10 @@ namespace RockGarden
         public int getArea()
         {
             return this.width * this.length;
+        }
+        public override string ToString()
+        {
+            return stringRepresentation;
         }
     }
 }
