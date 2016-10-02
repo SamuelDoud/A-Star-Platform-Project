@@ -20,27 +20,35 @@ namespace RockGarden
 
         public void setResident(Resident member, int baseX, int baseY)
         {
-            this.occupant = member;
+            occupant = member;
             this.baseX = baseX;
             this.baseY = baseY;
         }
         public void removeResident()
         {
-            this.occupant = null;
-            this.baseX = -1;
-            this.baseY = -1;
+            occupant = null;
+            baseX = -1;
+            baseY = -1;
         }
         public Resident getResident()
         {
-            return this.occupant;
+            return occupant;
         }
         public int getBaseX()
         {
-            return this.baseX;
+            return baseX;
         }
         public int getBaseY()
         {
-            return this.baseX;
+            return baseX;
+        }
+        public override string ToString()
+        {
+            if (this.occupant == null)
+            {
+                return " ";
+            }
+            return occupant.ToString();
         }
     }
 }
