@@ -35,12 +35,18 @@ namespace RockGarden
         {
             return grid[x, y].getResident();
         }
+        /// <summary>
+        /// Fills empty atoms in the garden with blank gravel.
+        /// </summary>
         public void fillWithGravel()
         {
             foreach (Tuple<int, int> coordinate in getCoordinates())
             {
-                grid[coordinate.Item1, coordinate.Item2].setResident(new Gravel(),
+                if (grid[coordinate.Item1, coordinate.Item2].getResident() == null)
+                {
+                    grid[coordinate.Item1, coordinate.Item2].setResident(new Gravel(),
                     coordinate.Item1, coordinate.Item2);
+                }
             }
         }
         /// <summary>
@@ -63,7 +69,7 @@ namespace RockGarden
             foreach (Tuple<int, int> coordinate in pointsToAddTo)
             {
                 //is there an item here? is it gravel?
-                if (getResident(coordinate.Item1, coordinate.Item2) != null ||
+                if (getResident(coordinate.Item1, coordinate.Item2) != null &&
                     !getResident(coordinate.Item1, coordinate.Item2).isGravel)
                 {
                     if (!overwrite)
@@ -74,7 +80,7 @@ namespace RockGarden
                     else
                     {
                         //delete the object here at all locations it exists
-                        removeObject(x, y);
+                        removeResident(x, y);
                     }
                 }
             }
@@ -97,7 +103,7 @@ namespace RockGarden
         /// coodinate that forms the pair (x, y) contains the Resident to be removed.</param>
         /// <returns>Boolean indicating whether any object existed on the passed set of
         /// coordinates.</returns>
-        public bool removeObject(int x, int y)
+        public bool removeResident(int x, int y)
         {
             Resident evictee = grid[x, y].getResident();
             if (evictee == null)

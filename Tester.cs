@@ -17,12 +17,20 @@ namespace RockGarden
             fillWithGravel();
             addResident(new Rock(2, 4), 2, 4, false);
             addResident(new Rock(3, 4), 2, 5, false);
+            fillWithGravel();
             addResident(new Rock(10, 10), 3, 4, true);
+            fillWithGravel();
             //should be the only rock that is in the garden
+            removeResident(3, 5);
+            
         }
         public bool addResident(Resident resident, int x, int y, bool overwrite)
         {
             return testGarden.addResident(resident, x, y, overwrite);
+        }
+        public bool removeResident(int x, int y)
+        {
+            return testGarden.removeResident(x, y);
         }
         public void fillWithGravel()
         {
