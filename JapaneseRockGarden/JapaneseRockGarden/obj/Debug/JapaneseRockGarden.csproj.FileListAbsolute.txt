@@ -1,0 +1,8 @@
+C:\Users\fl783\Source\Repos\A-Star-Platform-Project\JapaneseRockGarden\JapaneseRockGarden\bin\Debug\JapaneseRockGarden.exe.config
+C:\Users\fl783\Source\Repos\A-Star-Platform-Project\JapaneseRockGarden\JapaneseRockGarden\bin\Debug\JapaneseRockGarden.exe
+C:\Users\fl783\Source\Repos\A-Star-Platform-Project\JapaneseRockGarden\JapaneseRockGarden\bin\Debug\JapaneseRockGarden.pdb
+C:\Users\fl783\Source\Repos\A-Star-Platform-Project\JapaneseRockGarden\JapaneseRockGarden\obj\Debug\JapaneseRockGarden.csprojResolveAssemblyReference.cache
+C:\Users\fl783\Source\Repos\A-Star-Platform-Project\JapaneseRockGarden\JapaneseRockGarden\obj\Debug\JapaneseRockGarden.Properties.Resources.resources
+C:\Users\fl783\Source\Repos\A-Star-Platform-Project\JapaneseRockGarden\JapaneseRockGarden\obj\Debug\JapaneseRockGarden.csproj.GenerateResource.Cache
+C:\Users\fl783\Source\Repos\A-Star-Platform-Project\JapaneseRockGarden\JapaneseRockGarden\obj\Debug\JapaneseRockGarden.exe
+C:\Users\fl783\Source\Repos\A-Star-Platform-Project\JapaneseRockGarden\JapaneseRockGarden\obj\Debug\JapaneseRockGarden.pdb
