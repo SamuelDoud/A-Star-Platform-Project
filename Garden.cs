@@ -8,6 +8,8 @@ namespace RockGarden
 {
     class Garden
     {
+        public static int n_directions = 8; //The four cardinal directions + NE, NW, SW, SE.
+        public static const int NORTH = 0, NORTHEAST = 1, EAST = 2, SOUTHEAST = 3, SOUTH = 4, SOUTHWEST = 5, WEST = 6, NORTHWEST = 7;
         private int length, width;
         private Atom[,] grid;
 
@@ -120,6 +122,68 @@ namespace RockGarden
             return true;
 
         }
+        
+        public void addStream(int x_0, int y_0, int x_1, int y_1)
+        {
+            Resident origin = grid[x_0, y_0].getResident();
+            Resident end = grid[x_1, y_1].getResident();
+            int new_x_0 = x_0, new_y_0 = y_0, new_x_1 = x_1, new_y_1 = y_1, direction;
+            while(new_x_0 != new_x_1 && new_y_0 != new_y_1)
+            {
+                direction = closestDirection(new_x_0, new_y_0, new_x_1, new_y_1);
+                switch (direction)
+                {
+                    case NORTH:
+                        new_x_0 += 0;
+                        new_y_0 += 1;
+                        break;
+                    case NORTHEAST:
+                        new_x_0 += 1;
+                        new_y_0 += 1;
+                        break;
+                    case EAST:
+                        new_x_0 += 1;
+                        new_y_0 += 0;
+                        break;
+                    case SOUTHEAST:
+                        new_x_0 += 1;
+                        new_y_0 -= 1;
+                        break;
+                    case SOUTH:
+                        new_x_0 += 0;
+                        new_y_0 -= 1;
+                        break;
+                    case SOUTHWEST:
+                        new_x_0 -= 1;
+                        new_y_0 -= 1;
+                        break;
+                    case WEST:
+                        new_x_0 -= 1;
+                        new_y_0 += 0;
+                        break;
+                    case NORTHWEST:
+                        new_x_0 -= 1;
+                        new_y_1 += 1;
+                        break;
+                    default:
+                        throw new KeyNotFoundException();
+                        //probably the wrong exception
+                }
+            }
+        }
+
+        private void addStreamSingular(int x_0, int y_0, int x_1, int y_1)
+        {
+
+        }
+
+        private int closestDirection(int x_0, int y_0, int x_1, int y_1)
+        {
+            int x_1_toOrigin = x_1 - x_0;
+            int y_1_toOrigin = y_1 - y_0;
+            double angle_in_radians = Math.Atan2(y_1_toOrigin, x_1_toOrigin) - Math.Atan2(1, 0);
+            return (int)Math.Round(8 * angle_in_radians / Math.PI, MidpointRounding.AwayFromZero);
+        }
 
         /// <summary>
         /// Return a list of coordinates that would be found in a rectangle of width x length size
@@ -142,7 +206,10 @@ namespace RockGarden
             }
             return points;
         }
-
+        /// <summary>
+        /// Get all coordinates of the grid
+        /// </summary>
+        /// <returns></returns>
         private List<Tuple<int, int>> getCoordinates()
         {
             return getCoordinates(0, 0, width, length);
