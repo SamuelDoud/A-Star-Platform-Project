@@ -14,7 +14,7 @@ namespace RockGarden
         public bool isStream {get; set;}
         public List<int> connections = new List<int>();
         public static string terminus = "#", blank = ".";
-        public Gravel(int width, int length) : base(width, length, 1, true)
+        public Gravel() : base(1, 1, 1, true)
         {
             stringRepresentation = blank;
         }

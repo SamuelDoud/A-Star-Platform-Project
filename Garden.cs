@@ -19,6 +19,10 @@ namespace RockGarden
             this.length = length;
             this.width = width;
             grid = new Atom[width, length];
+            foreach (Tuple<int, int> coordinate in getCoordinates())
+            {
+                grid[coordinate.Item1, coordinate.Item2] = new Atom();
+            }
         }
 
         /// <summary>
@@ -31,7 +35,14 @@ namespace RockGarden
         {
             return grid[x, y].getResident();
         }
-
+        public void fillWithGravel()
+        {
+            foreach (Tuple<int, int> coordinate in getCoordinates())
+            {
+                grid[coordinate.Item1, coordinate.Item2].setResident(new Gravel(),
+                    coordinate.Item1, coordinate.Item2);
+            }
+        }
         /// <summary>
         /// Adds a Resident to the garden.
         /// </summary>
@@ -52,7 +63,8 @@ namespace RockGarden
             foreach (Tuple<int, int> coordinate in pointsToAddTo)
             {
                 //is there an item here? is it gravel?
-                if (!getResident(coordinate.Item1, coordinate.Item2).isGravel)
+                if (getResident(coordinate.Item1, coordinate.Item2) != null ||
+                    !getResident(coordinate.Item1, coordinate.Item2).isGravel)
                 {
                     if (!overwrite)
                     {
@@ -124,6 +136,11 @@ namespace RockGarden
             }
             return points;
         }
+
+        private List<Tuple<int, int>> getCoordinates()
+        {
+            return getCoordinates(0, 0, width, length);
+        }
         /// <summary>
         /// Get a string representation of the Rock Garden.
         /// </summary>
@@ -134,14 +151,14 @@ namespace RockGarden
             for (int x = 0; x < width; x++)
             {
                 //counting down as the (0, 0) is located in the bottom right corner
-                for (int y = length; y >= 0; y--)
+                for (int y = length - 1; y >= 0; y--)
                 {
                     gardenString += grid[x, y].ToString();
                 }
                 //going to a new row so we will need a new line
                 gardenString += "\n";
             }
-            return "";
+            return gardenString;
         }
     }
 }

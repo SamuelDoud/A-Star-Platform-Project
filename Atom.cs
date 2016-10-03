@@ -16,6 +16,7 @@ namespace RockGarden
         public Atom()
         {
             this.removeResident();
+
         }
 
         public void setResident(Resident member, int baseX, int baseY)
@@ -40,7 +41,7 @@ namespace RockGarden
         }
         public int getBaseY()
         {
-            return baseX;
+            return baseY;
         }
         public override string ToString()
         {

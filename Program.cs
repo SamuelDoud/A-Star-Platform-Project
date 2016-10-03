@@ -14,9 +14,12 @@ namespace RockGarden
         [STAThread]
         static void Main()
         {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            //Application.EnableVisualStyles();
+            //Application.SetCompatibleTextRenderingDefault(false);
+            //Application.Run(new Form1());
+            Tester test = new Tester(20,20);
+            Console.WriteLine(test.ToString());
+            Console.ReadLine();
         }
     }
 }
