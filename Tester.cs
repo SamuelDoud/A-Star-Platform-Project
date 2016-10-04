@@ -22,6 +22,8 @@ namespace RockGarden
             fillWithGravel();
             //should be the only rock that is in the garden
             removeResident(3, 5);
+            fillWithGravel();
+            addStream(1, 2, 5, 9);
             
         }
         public bool addResident(Resident resident, int x, int y, bool overwrite)
@@ -36,6 +38,11 @@ namespace RockGarden
         {
             testGarden.fillWithGravel();
         }
+        public void addStream(int x_0, int y_0, int x_1, int y_1)
+        {
+            testGarden.addStream(x_0, y_0, x_1, y_1);
+        }
+
         public override string ToString()
         {
             return testGarden.ToString();

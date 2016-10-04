@@ -9,7 +9,7 @@ namespace RockGarden
     class Garden
     {
         public static int n_directions = 8; //The four cardinal directions + NE, NW, SW, SE.
-        public static const int NORTH = 0, NORTHEAST = 1, EAST = 2, SOUTHEAST = 3, SOUTH = 4, SOUTHWEST = 5, WEST = 6, NORTHWEST = 7;
+        public const int NORTH = 0, NORTHEAST = 1, EAST = 2, SOUTHEAST = 3, SOUTH = 4, SOUTHWEST = 5, WEST = 6, NORTHWEST = 7;
         private int length, width;
         private Atom[,] grid;
 
@@ -120,17 +120,43 @@ namespace RockGarden
                 grid[coordinate.Item1, coordinate.Item2].removeResident();
             }
             return true;
-
         }
-        
+        /// <summary>
+        /// Creates a stream between two points. Will take the direction between the two and
+        /// move one-by-one until the points meet.
+        /// </summary>
+        /// <param name="x_0">The x-coordinate from the first point.</param>
+        /// <param name="y_0">The y-coordinate from the first point.</param>
+        /// <param name="x_1">The x-coordinate from the second point.</param>
+        /// <param name="y_1">The y-coordinate from the second point.</param>
         public void addStream(int x_0, int y_0, int x_1, int y_1)
         {
             Resident origin = grid[x_0, y_0].getResident();
             Resident end = grid[x_1, y_1].getResident();
-            int new_x_0 = x_0, new_y_0 = y_0, new_x_1 = x_1, new_y_1 = y_1, direction;
+            int new_x_0 = x_0, new_y_0 = y_0, new_x_1 = x_1, new_y_1 = y_1, direction, old_x_0, old_y_0;
             while(new_x_0 != new_x_1 && new_y_0 != new_y_1)
             {
                 direction = closestDirection(new_x_0, new_y_0, new_x_1, new_y_1);
+                old_x_0 = new_x_0;
+                old_y_0 = new_y_0;
+                //getting the new coordinate from the radians
+                directionSwitch(ref new_x_0, ref new_y_0, direction, false, 0);
+            }
+        }
+        private bool directionSwitch(ref int new_x_0, ref int new_y_0, int direction, bool positive, int delta)
+        {
+            delta = positive ? delta + 1 : delta * -1;
+            direction += delta;
+            int old_x_0 = new_x_0, old_y_0 = new_y_0;
+            bool overrideLegal = direction < 0 || direction > n_directions;
+            //recursion limit
+            if (delta > 8)
+            {
+                return false;
+            }
+            //assigning movement based on direction only if direction is between 0 and 8
+            if (!overrideLegal)
+            {
                 switch (direction)
                 {
                     case NORTH:
@@ -163,26 +189,37 @@ namespace RockGarden
                         break;
                     case NORTHWEST:
                         new_x_0 -= 1;
-                        new_y_1 += 1;
+                        new_y_0 += 1;
                         break;
-                    default:
-                        throw new KeyNotFoundException();
-                        //probably the wrong exception
                 }
             }
+            //try to add stream to this location and if it fails start trying to 'wiggle' around
+            if (!addStreamSingular(new_x_0, new_y_0, direction) || overrideLegal)
+            {
+                new_x_0 = old_x_0;
+                new_y_0 = old_y_0;
+                return directionSwitch(ref new_x_0, ref new_y_0, direction, positive ^= positive, delta);
+            }
+            //add a stream to the last spot in the opposite direction
+            addStreamSingular(old_x_0, old_y_0, oppositeDirection(direction));
+            return true;
         }
-
-        private void addStreamSingular(int x_0, int y_0, int x_1, int y_1)
+        private bool addStreamSingular(int x, int y, int direction)
         {
-
+            return this.grid[x, y].getResident().addStream(direction);
         }
 
         private int closestDirection(int x_0, int y_0, int x_1, int y_1)
         {
             int x_1_toOrigin = x_1 - x_0;
             int y_1_toOrigin = y_1 - y_0;
-            double angle_in_radians = Math.Atan2(y_1_toOrigin, x_1_toOrigin) - Math.Atan2(1, 0);
-            return (int)Math.Round(8 * angle_in_radians / Math.PI, MidpointRounding.AwayFromZero);
+            //arguments flipped to reflect 0 being north instead of east
+            double angle_in_radians = Math.Atan2(x_1_toOrigin, y_1_toOrigin) * (4 / Math.PI);
+            if (angle_in_radians < 0)
+            {
+                angle_in_radians = -1 * (angle_in_radians - 4);
+            }
+            return (int)Math.Round(angle_in_radians, MidpointRounding.AwayFromZero);
         }
 
         /// <summary>
@@ -213,6 +250,15 @@ namespace RockGarden
         private List<Tuple<int, int>> getCoordinates()
         {
             return getCoordinates(0, 0, width, length);
+        }
+        /// <summary>
+        /// Calculates the opposite number on a clock of 8 hours (our 8 directions)
+        /// </summary>
+        /// <param name="direction"></param>
+        /// <returns></returns>
+        private int oppositeDirection(int direction)
+        {
+            return direction > SOUTH ? direction % SOUTH : direction + SOUTH;
         }
         /// <summary>
         /// Get a string representation of the Rock Garden.
