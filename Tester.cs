@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Drawing;
 
 namespace RockGarden
 {
@@ -15,32 +16,32 @@ namespace RockGarden
             this.length = length;
             testGarden = new Garden(width, length);
             fillWithGravel();
-            addResident(new Rock(2, 4), 2, 4, false);
-            addResident(new Rock(3, 4), 2, 5, false);
+            addResident(new Rock(2, 4), new Point(2, 4), false);
+            addResident(new Rock(3, 4), new Point(2, 5), false);
             fillWithGravel();
-            addResident(new Rock(10, 10), 3, 4, true);
+            addResident(new Rock(10, 10), new Point(3, 4), true);
             fillWithGravel();
             //should be the only rock that is in the garden
-            removeResident(3, 5);
+            removeResident(new Point(3, 5));
             fillWithGravel();
-            addStream(1, 2, 5, 9);
+            addStream(new Point(1, 2), new Point (5, 9));
             
         }
-        public bool addResident(Resident resident, int x, int y, bool overwrite)
+        public bool addResident(Resident resident, Point spot, bool overwrite)
         {
-            return testGarden.addResident(resident, x, y, overwrite);
+            return testGarden.addResident(resident, spot, overwrite);
         }
-        public bool removeResident(int x, int y)
+        public bool removeResident(Point spot)
         {
-            return testGarden.removeResident(x, y);
+            return testGarden.removeResident(spot);
         }
         public void fillWithGravel()
         {
             testGarden.fillWithGravel();
         }
-        public void addStream(int x_0, int y_0, int x_1, int y_1)
+        public void addStream(Point start, Point end)
         {
-            testGarden.addStream(x_0, y_0, x_1, y_1);
+            testGarden.addStream(start, end);
         }
 
         public override string ToString()

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Drawing;
 
 namespace RockGarden
 {
@@ -19,11 +20,11 @@ namespace RockGarden
 
         }
 
-        public void setResident(Resident member, int baseX, int baseY)
+        public void setResident(Resident member, Point spot)
         {
             occupant = member;
-            this.baseX = baseX;
-            this.baseY = baseY;
+            this.baseX = spot.X;
+            this.baseY = spot.Y;
         }
         public void removeResident()
         {
@@ -42,6 +43,10 @@ namespace RockGarden
         public int getBaseY()
         {
             return baseY;
+        }
+        public Point getPoint()
+        {
+            return new Point(baseX, baseY);
         }
         public override string ToString()
         {
