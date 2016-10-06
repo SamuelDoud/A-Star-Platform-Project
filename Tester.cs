@@ -14,7 +14,7 @@ namespace RockGarden
         {
             this.width = width;
             this.length = length;
-            testGarden = new Garden(width, length);
+            testGarden = new Garden(length + 5, width);
             fillWithGravel();
             addResident(new Rock(2, 4), new Point(2, 4), false);
             addResident(new Rock(3, 4), new Point(2, 5), false);

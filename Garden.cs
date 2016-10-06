@@ -281,16 +281,34 @@ namespace RockGarden
         /// <returns>A string which gives an ASCII art view of the rock garden</returns>
         public override string ToString()
         {
-            string gardenString = "";
-            for (int x = 0; x < width; x++)
+            
+            string gardenString = "   ";
+            string bottom = "   ";
+            for (int i = 0; i < width; i++)
+            {
+
+                gardenString += i.ToString();
+                if (i < 10)
+                {
+                    gardenString += " ";
+                }
+                bottom += "__";
+            }
+            gardenString += "\n" + bottom + "\n" + length + ( length > 10 ?"| ": " | ");
+            for (int y = length - 1; y >= 0; y-- )
             {
                 //counting down as the (0, 0) is located in the bottom right corner
-                for (int y = length - 1; y >= 0; y--)
+                for (int x = 0; x < width; x++)
                 {
-                    gardenString += grid[x, y].ToString();
+                    gardenString += grid[x, y].ToString() + " ";
                 }
                 //going to a new row so we will need a new line
-                gardenString += "\n";
+                gardenString += "\n" + y;
+                if (y < 10)
+                {
+                    gardenString += " ";
+                }
+                gardenString += "| ";
             }
             return gardenString;
         }
