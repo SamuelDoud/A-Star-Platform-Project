@@ -24,8 +24,18 @@ namespace RockGarden
             //should be the only rock that is in the garden
             removeResident(new Point(3, 5));
             fillWithGravel();
-            addStream(new Point(1, 2), new Point (5, 9));
-            
+            addStream(new Point(12, 2), new Point (2, 19));
+            List<Point> starts = new List<Point>();
+            List<Point> ends = new List<Point>();
+            starts.Add(new Point(0, 0));
+            starts.Add(new Point(0, 1));
+            ends.Add(new Point(4, 4));
+            ends.Add(new Point(4, 5));
+            addRiver(starts, ends);
+        }
+        public void addRiver(List<Point> starts, List<Point> ends)
+        {
+            testGarden.addRiver(starts, ends);
         }
         public bool addResident(Resident resident, Point spot, bool overwrite)
         {

@@ -232,9 +232,9 @@ namespace RockGarden
             double angle_in_radians = Math.Atan2(endX_toOrigin, endY_toOrigin) * (4 / Math.PI);
             if (angle_in_radians < 0)
             {
-                angle_in_radians = -1 * (angle_in_radians - 4);
+                angle_in_radians = (n_directions + angle_in_radians);
             }
-            return (int)Math.Round(angle_in_radians, MidpointRounding.AwayFromZero);
+            return ((int)Math.Round(angle_in_radians, MidpointRounding.AwayFromZero)) % n_directions;
         }
 
         /// <summary>
