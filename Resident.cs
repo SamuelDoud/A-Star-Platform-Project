@@ -26,6 +26,10 @@ namespace RockGarden
         {
             return this.width * this.length;
         }
+        public virtual bool addStream(int direction)
+        {
+            return false;
+        }
         public override string ToString()
         {
             return stringRepresentation;

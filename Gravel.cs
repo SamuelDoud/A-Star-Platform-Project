@@ -22,7 +22,13 @@ namespace RockGarden
         //connections being which direction the gravel's stream faces
         public int numberConnections()
         {
-            return this.connections.Count;
+            return connections.Count;
+        }
+        public override bool addStream(int direction)
+        {
+            connections.Add(direction);
+            newStringRepresentation();
+            return true;
         }
         public void addConnection(int direction)
         {

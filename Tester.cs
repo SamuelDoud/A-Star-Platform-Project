@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Drawing;
 
 namespace RockGarden
 {
@@ -13,29 +14,46 @@ namespace RockGarden
         {
             this.width = width;
             this.length = length;
-            testGarden = new Garden(width, length);
+            testGarden = new Garden(length + 5, width);
             fillWithGravel();
-            addResident(new Rock(2, 4), 2, 4, false);
-            addResident(new Rock(3, 4), 2, 5, false);
+            addResident(new Rock(2, 4), new Point(2, 4), false);
+            addResident(new Rock(3, 4), new Point(2, 5), false);
             fillWithGravel();
-            addResident(new Rock(10, 10), 3, 4, true);
+            addResident(new Rock(10, 10), new Point(3, 4), true);
             fillWithGravel();
             //should be the only rock that is in the garden
-            removeResident(3, 5);
-            
+            removeResident(new Point(3, 5));
+            fillWithGravel();
+            addStream(new Point(12, 2), new Point (2, 19));
+            List<Point> starts = new List<Point>();
+            List<Point> ends = new List<Point>();
+            starts.Add(new Point(0, 0));
+            starts.Add(new Point(0, 1));
+            ends.Add(new Point(4, 4));
+            ends.Add(new Point(4, 5));
+            addRiver(starts, ends);
         }
-        public bool addResident(Resident resident, int x, int y, bool overwrite)
+        public void addRiver(List<Point> starts, List<Point> ends)
         {
-            return testGarden.addResident(resident, x, y, overwrite);
+            testGarden.addRiver(starts, ends);
         }
-        public bool removeResident(int x, int y)
+        public bool addResident(Resident resident, Point spot, bool overwrite)
         {
-            return testGarden.removeResident(x, y);
+            return testGarden.addResident(resident, spot, overwrite);
+        }
+        public bool removeResident(Point spot)
+        {
+            return testGarden.removeResident(spot);
         }
         public void fillWithGravel()
         {
             testGarden.fillWithGravel();
         }
+        public void addStream(Point start, Point end)
+        {
+            testGarden.addStream(start, end);
+        }
+
         public override string ToString()
         {
             return testGarden.ToString();
