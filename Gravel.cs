@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Drawing;
 
 namespace RockGarden
 {
     
     class Gravel : Resident
     {
-        public static int n_directions = 8; //The four cardinal directions + NE, NW, SW, SE.
-        public static int NORTH = 0, NORTHEAST = 1, EAST = 2, SOUTHEAST = 3, SOUTH = 4, SOUTHWEST = 5, WEST = 6, NORTHWEST = 7;
         public bool isStream {get; set;}
         public List<int> connections = new List<int>();
         public static string terminus = "#", blank = ".";
@@ -60,7 +59,7 @@ namespace RockGarden
             }
 
         }
-        private string directional(int origin, int destination)
+        private static string directional(int origin, int destination)
         {
             if (origin + destination == 4 && (origin == 0 || destination == 0))
             {

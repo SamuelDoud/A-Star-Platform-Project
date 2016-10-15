@@ -15,7 +15,7 @@ namespace RockGarden
         private Atom[,] grid;
 
         /// <summary>
-        /// 
+        /// Create a Garden of length and width.
         /// </summary>
         public Garden(int length, int width)
         {
@@ -24,7 +24,7 @@ namespace RockGarden
             grid = new Atom[width, length];
             foreach (Point coordinate in getCoordinates())
             {
-                grid[coordinate.X, coordinate.Y] = new Atom();
+                grid[coordinate.X, coordinate.Y] = new Atom(coordinate);
             }
         }
 
@@ -36,18 +36,20 @@ namespace RockGarden
         /// <returns>The Resident that occupies this square</returns>
         public Resident getResident(Point spot)
         {
-            return grid[spot.X, spot.Y].getResident();
+            return atomAt(spot).getResident();
         }
         /// <summary>
         /// Fills empty atoms in the garden with blank gravel.
         /// </summary>
         public void fillWithGravel()
         {
+            Atom tempAtom;
             foreach (Point coordinate in getCoordinates())
             {
-                if (grid[coordinate.X, coordinate.Y].getResident() == null)
+                tempAtom = atomAt(coordinate);
+                if (tempAtom.getResident() == null)
                 {
-                    grid[coordinate.X, coordinate.Y].setResident(new Gravel(),
+                    tempAtom.setResident(new Gravel(),
                     coordinate);
                 }
             }
@@ -63,8 +65,7 @@ namespace RockGarden
         /// <returns>A boolean indicating whether the addition was successful or not.</returns>
         public bool addResident(Resident newNeighbor, Point spot, bool overwrite)
         {
-            int width = newNeighbor.width;
-            int length = newNeighbor.length;
+            newNeighbor.origin = spot;
             List<Point> pointsToAddTo = getCoordinates(spot, newNeighbor.width, newNeighbor.length);
             //check if we can add the resident to the grid
             //return false if user does not want to overwrite anything that isn't gravel
@@ -90,7 +91,7 @@ namespace RockGarden
             //add the resident to the grid at each point it would occupy based on its size
             foreach (Point coordinate in pointsToAddTo)
             {
-                grid[coordinate.X, coordinate.Y].setResident(newNeighbor, spot);
+                atomAt(coordinate).setResident(newNeighbor, spot);
             }
             return true;
         }
@@ -108,21 +109,26 @@ namespace RockGarden
         /// coordinates.</returns>
         public bool removeResident(Point spot)
         {
-            Resident evictee = grid[spot.X, spot.Y].getResident();
+            Resident evictee = atomAt(spot).getResident();
             if (evictee == null)
             {
                 //no Resident occupies this space
                 return false;
             }
             //go through each Atom that contains this object
-            foreach (Point coordinate in getCoordinates(this.grid[spot.X, spot.Y].getPoint(),
+            foreach (Point coordinate in getCoordinates(atomAt(spot).getPoint(),
                 evictee.width, evictee.length))
             {
-                grid[coordinate.X, coordinate.Y].removeResident();
+                atomAt(coordinate).removeResident();
             }
             return true;
         }
-
+        /// <summary>
+        /// A river is a multiple Atom wide stream.
+        /// The list of Points must have the same counts.
+        /// </summary>
+        /// <param name="startPoints">A list of Points for the river to start at.</param>
+        /// <param name="endPoints">A list of Points for the river to end at.</param>
         public void addRiver(List<Point> startPoints, List<Point> endPoints)
         {
             if (startPoints.Count != endPoints.Count)
@@ -145,8 +151,6 @@ namespace RockGarden
         /// <param name="end.Y">The y-coordinate from the second point.</param>
         public void addStream(Point start, Point end)
         {
-            Resident originResident = grid[start.X, start.Y].getResident();
-            Resident endResident = grid[end.X, end.Y].getResident();
             Point new_end = end, new_start = start, old_start;
 
             int direction;
@@ -221,10 +225,10 @@ namespace RockGarden
         }
         private bool addStreamSingular(Point spot, int direction)
         {
-            return this.grid[spot.X, spot.Y].getResident().addStream(direction);
+            return atomAt(spot).getResident().addStream(direction);
         }
 
-        private int closestDirection(Point start, Point end)
+        private static int closestDirection(Point start, Point end)
         {
             int endX_toOrigin = end.X - start.X;
             int endY_toOrigin = end.Y - start.Y;
@@ -246,7 +250,7 @@ namespace RockGarden
         /// <param name="width">Number of atoms wide the selection is</param>
         /// <param name="length">Number of atoms long the selection is </param>
         /// <returns></returns>
-        private List<Point> getCoordinates(Point start, int width, int length)
+        private static List<Point> getCoordinates(Point start, int width, int length)
         {
             var points = new List<Point>();
             for (int currentX = start.X; currentX < start.X + width; currentX++)
@@ -271,10 +275,205 @@ namespace RockGarden
         /// </summary>
         /// <param name="direction"></param>
         /// <returns></returns>
-        private int oppositeDirection(int direction)
+        private static int oppositeDirection(int direction)
         {
             return direction > SOUTH ? direction % SOUTH : direction + SOUTH;
         }
+        /// <summary>
+        /// Gets the Atoms in a specified area.
+        /// </summary>
+        /// <param name="origin">The lower left corner of the neighborhood.</param>
+        /// <param name="x">How many x Atoms the neighborhood spans.</param>
+        /// <param name="y">How many y Atoms the neighborhood spans.</param>
+        /// <returns>A list of the Atoms in this neighborhood in the form of a Neiughborhood
+        /// object.</returns>
+        public Neighborhood getNeighborhood(Point origin, int x, int y)
+        {
+            List<Point> addresses = getCoordinates(origin, x, y);
+            //the neighborhood listserv...
+            List<Atom> neighbors = new List<Atom>();
+            foreach (Point coordinate in addresses)
+            {
+                neighbors.Add(atomAt(coordinate));
+            }
+            return new Neighborhood(neighbors);
+        }
+        /// <summary>
+        /// Gets the Atom located at this Point in the Garden.
+        /// Used to eliminate clunky use of grid[p.X, p.Y].
+        /// </summary>
+        /// <param name="location">The location of the Atom desired.</param>
+        /// <returns>The Atom at the passed location.</returns>
+        private Atom atomAt(Point location)
+        {
+            try
+            {
+                return grid[location.X, location.Y];
+            }
+            catch (IndexOutOfRangeException)
+            {
+                Console.WriteLine("This location: (" + location.X + ", " + location.Y + " is not in the Garden.");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Evaluates the garden for symmetry by checking for relative symmetry on 4 axis
+        /// N-S, E-W, NE-SW, and NW-SE.
+        ///
+        /// </summary>
+        /// <returns>A double from 0 (unique) to 1 (full symmetry) describing the symmetry</returns>
+        public double symmetric(int jigger)
+        {
+            //Gravel matches aren't that big of a deal.
+            //More interested in Rocks
+            //We are going to take the Hamming distance of the strings by "Jiggering" them by some integer (call it jigger) in each direction
+            //Unlike Hamming we are only going to take the count of the Rs that do match up to the other neighborhood.
+            //Then we will divide this number by the min number of Rs in each comparsion section times J^2 (so the number of Rs in N for E-W and NE in NW-SE)
+            //If perfectly symmetrical, this number will be 1.
+            double slope = length / (width + 0.0), product = 1;
+            
+            Point tempPoint;
+            Atom tempAtom;
+            //select the minimum number of rocks
+
+            Neighborhood north, south, east, west, northeast, southwest, northwest, southeast;
+            north = getNeighborhood(new Point(0, length / 2), width, length - (length / 2));
+            south = getNeighborhood(new Point(0, 0), width, (length / 2));
+            east = getNeighborhood(new Point(0, 0), (width / 2), length);
+            west = getNeighborhood(new Point(0, (width / 2)), width - (width / 2), length);
+            northeast = new Neighborhood();
+            southeast = new Neighborhood();
+            northwest = new Neighborhood();
+            southwest = new Neighborhood();
+
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < length; y++)
+                {
+                    tempPoint = new Point(x, y);
+                    tempAtom = atomAt(tempPoint);
+                    if (y > slope * x)
+                    {
+                        //in NW
+                        northwest.addAtom(tempAtom);
+                    }
+                    else
+                    {
+                        //in SE
+                        southeast.addAtom(tempAtom);
+                    }
+                    if (y > (-1 * slope) * x + length)
+                    {
+                        //in NE
+                        northeast.addAtom(tempAtom);
+                    }
+                    else
+                    {
+                        //in SW
+                        southwest.addAtom(tempAtom);
+                    }
+                }
+            }
+            //do all comparisons
+            product *= symmetric(north, south, jigger, false, false);
+            product *= symmetric(east, west, jigger, false, true);
+            product *= symmetric(northwest, southeast, jigger, true, false);
+            product *= symmetric(northeast, southwest, jigger, true, false);
+            return product;
+        }
+        /// <summary>
+        /// Go through every point in the upper neighborhood and compare it to the lower.
+        /// Need to implement how to refernce points (Offsetting)
+        /// </summary>
+        /// <param name="upper"></param>
+        /// <param name="lower"></param>
+        /// <param name="jigger"></param>
+        /// <returns></returns>
+        private double symmetric(Neighborhood upper, Neighborhood lower, int jigger, bool flipCoordinates, bool flipOnWidth)
+        {
+            int totalRocks;
+            int upperRocks = upper.numberOfRocks();
+            int lowerRocks = lower.numberOfRocks();
+            totalRocks = upperRocks < lowerRocks ? upperRocks : lowerRocks;
+            double product = 1;
+            Atom tempAtom;
+            Point tempLocation;
+           
+            foreach(Atom a in upper.getAtoms())
+            {
+                if (flipCoordinates)
+                {
+                    tempLocation = invert(a.getLocation());
+                }
+                else
+                {
+                    if (flipOnWidth)
+                    {
+                        tempLocation = new Point(a.getLocation().X, width + (width / 2 - a.getLocation().Y));
+                    }
+                    else
+                    {
+                        tempLocation = new Point(length + (length / 2 - a.getLocation().X), a.getLocation().Y);
+                    }
+                }
+                tempAtom = new Atom(tempLocation);
+                product *= singleSymmetry(tempAtom, lower, jigger, a.getLocation());
+            }
+            return product;
+        }
+        /// <summary>
+        /// Flips the X and Y.
+        /// </summary>
+        /// <param name="location">The Point to be inverted.</param>
+        /// <returns>The inverted Point.</returns>
+        public Point invert(Point location)
+        {
+            return new Point(location.Y, location.X);
+        }
+        /// <summary>
+        /// Counts the number of hits and return how many hits occured against how many
+        /// were possible.
+        /// </summary>
+        /// <param name="atomCompare"></param>
+        /// <param name="neighboorhoodCompare"></param>
+        /// <param name="jigger"></param>
+        /// <param name="atomLocation"></param>
+        /// <returns></returns>
+        private static double singleSymmetry(Atom atomCompare, Neighborhood neighboorhoodCompare,
+                                             int jigger, Point atomLocation)
+        {
+            string atomCompareString = atomCompare.ToString();
+            //temp. Only care about rocks
+            if (!atomCompareString.Equals(Rock.rockString))
+            {
+                return 0;
+            }
+            Point comparePoint;
+            int countHits = 0, countAll = 0;
+            for (int xDelta = -1 * jigger; xDelta <= jigger; xDelta++)
+            {
+                for (int yDelta = -1 * jigger; yDelta <= jigger; yDelta++)
+                {
+                    comparePoint = new Point(atomLocation.X + xDelta, atomLocation.Y + yDelta);
+                    try
+                    {
+                        if (atomCompareString.Equals(neighboorhoodCompare.getAtom(comparePoint).ToString()))
+                        {
+                            countHits++;
+                        }
+                        countAll++;
+                    }
+                    finally
+                    {
+
+                    }
+                }
+            }
+            //prevent division by zero errors
+            return countAll != 0? countHits / (countAll + 0.0): 0;
+        }
+
         /// <summary>
         /// Get a string representation of the Rock Garden.
         /// </summary>
