@@ -437,7 +437,10 @@ namespace RockGarden
                         }
                         countAll++;
                     }
-                    
+                    finally
+                    {
+
+                    }
                 }
             }
             //prevent division by zero errors
