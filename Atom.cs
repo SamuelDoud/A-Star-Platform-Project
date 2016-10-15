@@ -14,17 +14,26 @@ namespace RockGarden
         //can act as a key pair to compare objects
         private int baseX;
         private int baseY;
+        private int weight;
         public Atom()
         {
-            this.removeResident();
-
+            weight = 1;
+            initalize();
         }
-
+        public Atom(int weight)
+        {
+            this.weight = weight;
+            initalize();
+        }
+        public void initalize()
+        {
+            removeResident();
+        }
         public void setResident(Resident member, Point spot)
         {
             occupant = member;
-            this.baseX = spot.X;
-            this.baseY = spot.Y;
+            baseX = spot.X;
+            baseY = spot.Y;
         }
         public void removeResident()
         {

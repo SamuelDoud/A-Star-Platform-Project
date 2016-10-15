@@ -15,7 +15,7 @@ namespace RockGarden
         private Atom[,] grid;
 
         /// <summary>
-        /// 
+        /// Create a Garden of length and width.
         /// </summary>
         public Garden(int length, int width)
         {
@@ -36,18 +36,20 @@ namespace RockGarden
         /// <returns>The Resident that occupies this square</returns>
         public Resident getResident(Point spot)
         {
-            return grid[spot.X, spot.Y].getResident();
+            return atomAt(spot).getResident();
         }
         /// <summary>
         /// Fills empty atoms in the garden with blank gravel.
         /// </summary>
         public void fillWithGravel()
         {
+            Atom tempAtom;
             foreach (Point coordinate in getCoordinates())
             {
-                if (grid[coordinate.X, coordinate.Y].getResident() == null)
+                tempAtom = atomAt(coordinate);
+                if (tempAtom.getResident() == null)
                 {
-                    grid[coordinate.X, coordinate.Y].setResident(new Gravel(),
+                    tempAtom.setResident(new Gravel(),
                     coordinate);
                 }
             }
@@ -63,8 +65,7 @@ namespace RockGarden
         /// <returns>A boolean indicating whether the addition was successful or not.</returns>
         public bool addResident(Resident newNeighbor, Point spot, bool overwrite)
         {
-            int width = newNeighbor.width;
-            int length = newNeighbor.length;
+            newNeighbor.origin = spot;
             List<Point> pointsToAddTo = getCoordinates(spot, newNeighbor.width, newNeighbor.length);
             //check if we can add the resident to the grid
             //return false if user does not want to overwrite anything that isn't gravel
@@ -90,7 +91,7 @@ namespace RockGarden
             //add the resident to the grid at each point it would occupy based on its size
             foreach (Point coordinate in pointsToAddTo)
             {
-                grid[coordinate.X, coordinate.Y].setResident(newNeighbor, spot);
+                atomAt(coordinate).setResident(newNeighbor, spot);
             }
             return true;
         }
@@ -108,21 +109,26 @@ namespace RockGarden
         /// coordinates.</returns>
         public bool removeResident(Point spot)
         {
-            Resident evictee = grid[spot.X, spot.Y].getResident();
+            Resident evictee = atomAt(spot).getResident();
             if (evictee == null)
             {
                 //no Resident occupies this space
                 return false;
             }
             //go through each Atom that contains this object
-            foreach (Point coordinate in getCoordinates(this.grid[spot.X, spot.Y].getPoint(),
+            foreach (Point coordinate in getCoordinates(atomAt(spot).getPoint(),
                 evictee.width, evictee.length))
             {
-                grid[coordinate.X, coordinate.Y].removeResident();
+                atomAt(coordinate).removeResident();
             }
             return true;
         }
-
+        /// <summary>
+        /// A river is a multiple Atom wide stream.
+        /// The list of Points must have the same counts.
+        /// </summary>
+        /// <param name="startPoints">A list of Points for the river to start at.</param>
+        /// <param name="endPoints">A list of Points for the river to end at.</param>
         public void addRiver(List<Point> startPoints, List<Point> endPoints)
         {
             if (startPoints.Count != endPoints.Count)
@@ -145,8 +151,6 @@ namespace RockGarden
         /// <param name="end.Y">The y-coordinate from the second point.</param>
         public void addStream(Point start, Point end)
         {
-            Resident originResident = grid[start.X, start.Y].getResident();
-            Resident endResident = grid[end.X, end.Y].getResident();
             Point new_end = end, new_start = start, old_start;
 
             int direction;
@@ -221,10 +225,10 @@ namespace RockGarden
         }
         private bool addStreamSingular(Point spot, int direction)
         {
-            return this.grid[spot.X, spot.Y].getResident().addStream(direction);
+            return atomAt(spot).getResident().addStream(direction);
         }
 
-        private int closestDirection(Point start, Point end)
+        private static int closestDirection(Point start, Point end)
         {
             int endX_toOrigin = end.X - start.X;
             int endY_toOrigin = end.Y - start.Y;
@@ -246,7 +250,7 @@ namespace RockGarden
         /// <param name="width">Number of atoms wide the selection is</param>
         /// <param name="length">Number of atoms long the selection is </param>
         /// <returns></returns>
-        private List<Point> getCoordinates(Point start, int width, int length)
+        private static List<Point> getCoordinates(Point start, int width, int length)
         {
             var points = new List<Point>();
             for (int currentX = start.X; currentX < start.X + width; currentX++)
@@ -271,9 +275,45 @@ namespace RockGarden
         /// </summary>
         /// <param name="direction"></param>
         /// <returns></returns>
-        private int oppositeDirection(int direction)
+        private static int oppositeDirection(int direction)
         {
             return direction > SOUTH ? direction % SOUTH : direction + SOUTH;
+        }
+        /// <summary>
+        /// Gets the Atoms in a specified area.
+        /// </summary>
+        /// <param name="origin">The lower left corner of the neighborhood.</param>
+        /// <param name="x">How many x Atoms the neighborhood spans.</param>
+        /// <param name="y">How many y Atoms the neighborhood spans.</param>
+        /// <returns>A list of the Atoms in this neighborhood</returns>
+        public List<Atom> getNeighborhood(Point origin, int x, int y)
+        {
+            List<Point> addresses = getCoordinates(origin, x, y);
+            //the neighborhood listserv...
+            List<Atom> neighbors = new List<Atom>();
+            foreach (Point coordinate in addresses)
+            {
+                neighbors.Add(atomAt(coordinate));
+            }
+            return neighbors;
+        }
+        /// <summary>
+        /// Gets the Atom located at this Point in the Garden.
+        /// Used to eliminate clunky use of grid[p.X, p.Y].
+        /// </summary>
+        /// <param name="location">The location of the Atom desired.</param>
+        /// <returns>The Atom at the passed location.</returns>
+        private Atom atomAt(Point location)
+        {
+            try
+            {
+                return grid[location.X, location.Y];
+            }
+            catch (IndexOutOfRangeException)
+            {
+                Console.WriteLine("This location: (" + location.X + ", " + location.Y + " is not in the Garden.");
+                throw;
+            }
         }
         /// <summary>
         /// Get a string representation of the Rock Garden.
