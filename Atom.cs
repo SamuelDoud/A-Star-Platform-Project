@@ -9,24 +9,27 @@ namespace RockGarden
 {
     class Atom
     {
+        public static int defaultWeight = 1;
         private Resident occupant;
         //describe where the location of the base of this Resident is
         //can act as a key pair to compare objects
         private int baseX;
         private int baseY;
-        private int weight;
-        public Atom()
+        private Point location;
+        private int weight { get; set; }
+
+        public Atom(Point location)
         {
-            weight = 1;
-            initalize();
+            initalize(location, defaultWeight);   
         }
-        public Atom(int weight)
+        public Atom(Point location, int weight)
         {
+            initalize(location, weight);
+        }
+        public void initalize(Point location, int weight)
+        {
+            this.location = location;
             this.weight = weight;
-            initalize();
-        }
-        public void initalize()
-        {
             removeResident();
         }
         public void setResident(Resident member, Point spot)
@@ -34,6 +37,10 @@ namespace RockGarden
             occupant = member;
             baseX = spot.X;
             baseY = spot.Y;
+        }
+        public Point getLocation()
+        {
+            return location;
         }
         public void removeResident()
         {

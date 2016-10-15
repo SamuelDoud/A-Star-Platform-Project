@@ -9,7 +9,7 @@ namespace RockGarden
 {
     class Rock : Resident
     {
-        
+        public static string rockString = "R";
         public const int NORTH = 0, EAST = 1, SOUTH = 2, WEST = 3;
         private int[] angleFaces = new int[4];
         //Need to define attributes of rocks here...
@@ -18,7 +18,7 @@ namespace RockGarden
         /// </summary>
         public Rock(int width, int length): base(width, length, 1, false)
         {
-            stringRepresentation = "R";
+            stringRepresentation = rockString;
             isGravel = false;
         }
 

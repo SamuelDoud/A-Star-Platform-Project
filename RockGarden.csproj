@@ -80,6 +80,7 @@
     </Compile>
     <Compile Include="Garden.cs" />
     <Compile Include="Gravel.cs" />
+    <Compile Include="Neighborhood.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Resident.cs" />
     <Compile Include="Rock.cs" />
