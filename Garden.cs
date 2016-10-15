@@ -376,10 +376,10 @@ namespace RockGarden
                 }
             }
             //do all comparisons
-            product *= symmetric(north, south, jigger);
-            product *= symmetric(east, west, jigger);
-            product *= symmetric(northwest, southeast, jigger);
-            product *= symmetric(northeast, southwest, jigger);
+            product *= symmetric(north, south, jigger, false, false);
+            product *= symmetric(east, west, jigger, false, true);
+            product *= symmetric(northwest, southeast, jigger, true, false);
+            product *= symmetric(northeast, southwest, jigger, true, false);
             return product;
         }
         /// <summary>
@@ -390,19 +390,46 @@ namespace RockGarden
         /// <param name="lower"></param>
         /// <param name="jigger"></param>
         /// <returns></returns>
-        private double symmetric(Neighborhood upper, Neighborhood lower, int jigger)
+        private double symmetric(Neighborhood upper, Neighborhood lower, int jigger, bool flipCoordinates, bool flipOnWidth)
         {
             int totalRocks;
             int upperRocks = upper.numberOfRocks();
             int lowerRocks = lower.numberOfRocks();
             totalRocks = upperRocks < lowerRocks ? upperRocks : lowerRocks;
             double product = 1;
-            
+            Atom tempAtom;
+            Point tempLocation;
+           
             foreach(Atom a in upper.getAtoms())
             {
-                product *= singleSymmetry(a, lower, jigger, a.getLocation());
+                if (flipCoordinates)
+                {
+                    tempLocation = invert(a.getLocation());
+                }
+                else
+                {
+                    if (flipOnWidth)
+                    {
+                        tempLocation = new Point(a.getLocation().X, width + (width / 2 - a.getLocation().Y));
+                    }
+                    else
+                    {
+                        tempLocation = new Point(length + (length / 2 - a.getLocation().X), a.getLocation().Y);
+                    }
+                }
+                tempAtom = new Atom(tempLocation);
+                product *= singleSymmetry(tempAtom, lower, jigger, a.getLocation());
             }
             return product;
+        }
+        /// <summary>
+        /// Flips the X and Y.
+        /// </summary>
+        /// <param name="location">The Point to be inverted.</param>
+        /// <returns>The inverted Point.</returns>
+        public Point invert(Point location)
+        {
+            return new Point(location.Y, location.X);
         }
         /// <summary>
         /// Counts the number of hits and return how many hits occured against how many
@@ -413,9 +440,9 @@ namespace RockGarden
         /// <param name="jigger"></param>
         /// <param name="atomLocation"></param>
         /// <returns></returns>
-        private double singleSymmetry(Atom atomCompare, Neighborhood neighboorhoodCompare, int jigger, Point atomLocation)
+        private static double singleSymmetry(Atom atomCompare, Neighborhood neighboorhoodCompare,
+                                             int jigger, Point atomLocation)
         {
-
             string atomCompareString = atomCompare.ToString();
             //temp. Only care about rocks
             if (!atomCompareString.Equals(Rock.rockString))
