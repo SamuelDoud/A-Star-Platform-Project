@@ -79,6 +79,7 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Garden.cs" />
+    <Compile Include="GardenEvaluator.cs" />
     <Compile Include="Gravel.cs" />
     <Compile Include="Neighborhood.cs" />
     <Compile Include="Program.cs" />

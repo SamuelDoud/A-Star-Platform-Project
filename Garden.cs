@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Drawing;
 
 namespace RockGarden
@@ -151,26 +148,37 @@ namespace RockGarden
         /// <param name="end.Y">The y-coordinate from the second point.</param>
         public void addStream(Point start, Point end)
         {
+            if (!atomAt(start).getResident().isGravel || !atomAt(end).getResident().isGravel)
+            {
+                return;
+            }
+            int max = 500, runs = 0;
             Point new_end = end, new_start = start, old_start;
-
             int direction;
-            
-            while (new_start.X != new_end.X && new_start.Y != new_end.Y)
+            while (new_start.X != new_end.X && new_start.Y != new_end.Y && runs < max)
             {
                 direction = closestDirection(new_start, new_end);
                 old_start = new Point(new_start.X, new_start.Y);
                 //getting the new coordinate from the radians
                 directionSwitch(ref new_start, direction, false, 0);
+                runs++;
             }
         }
         private bool directionSwitch(ref Point new_start, int direction, bool positive, int delta)
         {
-            delta = positive ? delta + 1 : delta * -1;
-            direction += delta;
+            if (positive)
+            {
+                direction += delta;
+            }
+            else
+            {
+                direction -= delta;
+            }
+            delta += 1;
             Point old_start = new Point(new_start.X, new_start.Y);
-            bool overrideLegal = direction < 0 || direction > n_directions;
+            bool overrideLegal = direction < 0 || direction > n_directions - 1;
             //recursion limit
-            if (delta > 8)
+            if (delta > 16)
             {
                 return false;
             }
@@ -217,7 +225,7 @@ namespace RockGarden
             if (!addStreamSingular(new_start, direction) || overrideLegal)
             {
                 new_start = new Point(old_start.X, old_start.Y);
-                return directionSwitch(ref new_start, direction, positive ^= positive, delta);
+                return directionSwitch(ref new_start, direction, positive ^= true, delta);
             }
             //add a stream to the last spot in the opposite direction
             addStreamSingular(old_start, oppositeDirection(direction));
@@ -252,7 +260,7 @@ namespace RockGarden
         /// <returns></returns>
         private static List<Point> getCoordinates(Point start, int width, int length)
         {
-            var points = new List<Point>();
+            List<Point> points = new List<Point>();
             for (int currentX = start.X; currentX < start.X + width; currentX++)
             {
                 for (int currentY = start.Y; currentY < start.Y + length; currentY++)
@@ -312,7 +320,7 @@ namespace RockGarden
             }
             catch (IndexOutOfRangeException)
             {
-                Console.WriteLine("This location: (" + location.X + ", " + location.Y + " is not in the Garden.");
+                Console.WriteLine("This location: (" + location.X + ", " + location.Y + ") is not in the Garden.");
                 throw;
             }
         }
@@ -331,17 +339,30 @@ namespace RockGarden
             //Unlike Hamming we are only going to take the count of the Rs that do match up to the other neighborhood.
             //Then we will divide this number by the min number of Rs in each comparsion section times J^2 (so the number of Rs in N for E-W and NE in NW-SE)
             //If perfectly symmetrical, this number will be 1.
-            double slope = length / (width + 0.0), product = 1;
-            
+            List<double> products = new List<double>();
+            Neighborhood[] halves = allHalves();
+            Neighborhood north = halves[NORTH], northeast = halves[NORTHEAST], east = halves[EAST],
+                                 southeast = halves[SOUTHEAST], south = halves[SOUTH],
+                                 southwest = halves[SOUTHWEST], west = halves[WEST],
+                                 northwest = halves[NORTHWEST];
+            //do all comparisons
+            products.Add(symmetric(north, south, jigger, false, false));
+            products.Add(symmetric(east, west, jigger, false, true));
+            products.Add(symmetric(northwest, southeast, jigger, true, false));
+            products.Add(symmetric(northeast, southwest, jigger, true, false));
+            double averageProduct = average(products); 
+            return averageProduct;
+        }
+        public Neighborhood[] allHalves()
+        {
             Point tempPoint;
             Atom tempAtom;
-            //select the minimum number of rocks
-
+            double slope = length / (width + 0.0);
             Neighborhood north, south, east, west, northeast, southwest, northwest, southeast;
             north = getNeighborhood(new Point(0, length / 2), width, length - (length / 2));
             south = getNeighborhood(new Point(0, 0), width, (length / 2));
             east = getNeighborhood(new Point(0, 0), (width / 2), length);
-            west = getNeighborhood(new Point(0, (width / 2)), width - (width / 2), length);
+            west = getNeighborhood(new Point((width / 2), 0), width - (width / 2), length);
             northeast = new Neighborhood();
             southeast = new Neighborhood();
             northwest = new Neighborhood();
@@ -375,12 +396,7 @@ namespace RockGarden
                     }
                 }
             }
-            //do all comparisons
-            product *= symmetric(north, south, jigger, false, false);
-            product *= symmetric(east, west, jigger, false, true);
-            product *= symmetric(northwest, southeast, jigger, true, false);
-            product *= symmetric(northeast, southwest, jigger, true, false);
-            return product;
+            return new Neighborhood[] { north, northeast, east, southeast, south, southwest, west, northwest };
         }
         /// <summary>
         /// Go through every point in the upper neighborhood and compare it to the lower.
@@ -396,31 +412,45 @@ namespace RockGarden
             int upperRocks = upper.numberOfRocks();
             int lowerRocks = lower.numberOfRocks();
             totalRocks = upperRocks < lowerRocks ? upperRocks : lowerRocks;
-            double product = 1;
+            List<double> products = new List<double>();
             Atom tempAtom;
             Point tempLocation;
-           
-            foreach(Atom a in upper.getAtoms())
+
+            foreach (Atom a in upper.getAtoms())
             {
-                if (flipCoordinates)
+                if (!a.getResident().isGravel)
                 {
-                    tempLocation = invert(a.getLocation());
-                }
-                else
-                {
-                    if (flipOnWidth)
+                    if (flipCoordinates)
                     {
-                        tempLocation = new Point(a.getLocation().X, width + (width / 2 - a.getLocation().Y));
+                        tempLocation = invert(a.getLocation());
                     }
                     else
                     {
-                        tempLocation = new Point(length + (length / 2 - a.getLocation().X), a.getLocation().Y);
+                        if (flipOnWidth)
+                        {
+                            tempLocation = new Point(a.getLocation().X, length - 1 - a.getLocation().Y);
+                        }
+                        else
+                        {
+                            tempLocation = new Point(width - 1 - a.getLocation().X, a.getLocation().Y);
+                        }
                     }
+                    tempAtom = atomAt(tempLocation);
+                    products.Add(singleSymmetry(tempAtom, lower, jigger, a.getLocation()));
                 }
-                tempAtom = new Atom(tempLocation);
-                product *= singleSymmetry(tempAtom, lower, jigger, a.getLocation());
             }
-            return product;
+            return 1 - Math.Pow(average(products), 1 / 4.0);
+        }
+        private double average(List<double> numbers)
+        {
+            double sum = 0;
+            int count = 0;
+            foreach (double number in numbers)
+            {
+                sum += number;
+                count += 1;
+            }
+            return count != 0 ? sum / count : 0;
         }
         /// <summary>
         /// Flips the X and Y.
@@ -429,7 +459,14 @@ namespace RockGarden
         /// <returns>The inverted Point.</returns>
         public Point invert(Point location)
         {
-            return new Point(location.Y, location.X);
+            double slope = length / (width + 0.0);
+            //y = slope * x
+            //x = slope / y
+            double xDistanceToLine = location.X - location.Y / slope;
+            double yDistanceToLine = location.Y - slope * location.X;
+            int newX = (int)Math.Round(slope * location.X - xDistanceToLine, MidpointRounding.AwayFromZero);
+            int newY = (int)Math.Round(location.Y / slope - yDistanceToLine, MidpointRounding.AwayFromZero);
+            return new Point(newX, newY);
         }
         /// <summary>
         /// Counts the number of hits and return how many hits occured against how many
@@ -443,7 +480,7 @@ namespace RockGarden
         private static double singleSymmetry(Atom atomCompare, Neighborhood neighboorhoodCompare,
                                              int jigger, Point atomLocation)
         {
-            string atomCompareString = atomCompare.ToString();
+            string atomCompareString = atomCompare.ToString(), compareTo;
             //temp. Only care about rocks
             if (!atomCompareString.Equals(Rock.rockString))
             {
@@ -456,17 +493,19 @@ namespace RockGarden
                 for (int yDelta = -1 * jigger; yDelta <= jigger; yDelta++)
                 {
                     comparePoint = new Point(atomLocation.X + xDelta, atomLocation.Y + yDelta);
+                    compareTo = neighboorhoodCompare.getAtom(comparePoint).ToString();
                     try
                     {
-                        if (atomCompareString.Equals(neighboorhoodCompare.getAtom(comparePoint).ToString()))
+                        if (atomCompareString.Equals(compareTo))
                         {
                             countHits++;
                         }
                         countAll++;
                     }
-                    finally
+                    catch
                     {
-
+                        //not on the grid. This is instance is not a problem. Jiggering can throw
+                        //us outside of the grid.
                     }
                 }
             }

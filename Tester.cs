@@ -12,6 +12,8 @@ namespace RockGarden
         private int width, length;
         public Tester(int length, int width)
         {
+            GardenEvaluator ge = new GardenEvaluator();
+            
             this.width = width;
             this.length = length;
             testGarden = new Garden(length + 5, width);
@@ -22,7 +24,7 @@ namespace RockGarden
             addResident(new Rock(10, 10), new Point(3, 4), true);
             fillWithGravel();
             //should be the only rock that is in the garden
-            removeResident(new Point(3, 5));
+            //removeResident(new Point(3, 5));
             fillWithGravel();
             addStream(new Point(12, 2), new Point (2, 19));
             List<Point> starts = new List<Point>();
@@ -32,6 +34,8 @@ namespace RockGarden
             ends.Add(new Point(4, 4));
             ends.Add(new Point(4, 5));
             addRiver(starts, ends);
+            double score = ge.scoreGarden(testGarden);
+            Console.WriteLine(ge.scoreGarden(testGarden));
         }
         public void addRiver(List<Point> starts, List<Point> ends)
         {

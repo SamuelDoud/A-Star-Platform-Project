@@ -55,14 +55,18 @@ namespace RockGarden
         /// <returns></returns>
         public Atom getAtom(Point location)
         {
+            Point matchPoint;
             foreach(Atom atom in atoms)
             {
-                if (location.Equals(atom.getPoint()))
+                matchPoint = atom.getPoint();
+                if (location.Equals(matchPoint))
                 {
                     return atom;
                 }
             }
-            throw new KeyNotFoundException("This location is not in this Neighborhood.");
+
+            //#if DEBUG && ENABLETESTEXCEPTION
+            return new Atom(new Point(-1, 1));
         }
 
         /// <summary>
