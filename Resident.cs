@@ -10,8 +10,9 @@ namespace RockGarden
     class Resident
     {
         public bool isGravel;
+        public bool hasStream { get; set; }
         public int width, height, length;
-        public Point origin;
+        public Point origin, center;
         public string stringRepresentation = " ";
         public Resident(int width, int length, int height,  bool isGravel)
         {
@@ -19,14 +20,22 @@ namespace RockGarden
             this.length = length;
             this.height = height;
             this.isGravel = isGravel;
+            setCenter();
         }
         public bool gravel()
         {
-            return this.isGravel;
+            return isGravel;
         }
         public int getArea()
         {
-            return this.width * this.length;
+            return width * length;
+        }
+        private void setCenter()
+        {
+            double thisCenterX = (origin.X + width / 2.0);
+            double thisCenterY = (origin.Y + length / 2.0);
+            center = new Point((int)Math.Round(thisCenterX, MidpointRounding.AwayFromZero),
+                               (int)Math.Round(thisCenterY, MidpointRounding.AwayFromZero));
         }
         /// <summary>
         /// Finds the minimal distance from one rock to another.
@@ -38,17 +47,16 @@ namespace RockGarden
         /// Resident.</returns>
         public double getDistance(Resident other)
         {
-            double thisCenterX = (origin.X + width / 2.0);
-            double thisCenterY = (origin.Y + length / 2.0);
             double otherCenterX = (other.origin.X + other.width / 2.0);
             double otherCenterY = (other.origin.X + other.length / 2.0);
-            double slope = (thisCenterY - otherCenterY) / (thisCenterX - otherCenterX);
-            double rawDistance = Math.Sqrt(Math.Pow(thisCenterX - otherCenterX, 2) + Math.Pow(thisCenterY - otherCenterY, 2));
+            double slope = (center.Y - otherCenterY) / (center.X - otherCenterX);
+            double rawDistance = Math.Sqrt(Math.Pow(center.X - otherCenterX, 2) + Math.Pow(center.Y - otherCenterY, 2));
             //negative tracking on this, positive on other
             //remove the space from centers to edges of both residents.
             double edgeDistance = rawDistance - distanceToEdge(-1 *slope) - other.distanceToEdge(slope);
             return edgeDistance; 
         }
+
         public double distanceToEdge(double slope)
         {
             double slopeFromCorners = length / width;

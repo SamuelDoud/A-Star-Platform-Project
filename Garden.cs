@@ -185,41 +185,7 @@ namespace RockGarden
             //assigning movement based on direction only if direction is between 0 and 8
             if (!overrideLegal)
             {
-                switch (direction)
-                {
-                    case NORTH:
-                        new_start.X += 0;
-                        new_start.Y += 1;
-                        break;
-                    case NORTHEAST:
-                        new_start.X += 1;
-                        new_start.Y += 1;
-                        break;
-                    case EAST:
-                        new_start.X += 1;
-                        new_start.Y += 0;
-                        break;
-                    case SOUTHEAST:
-                        new_start.X += 1;
-                        new_start.Y -= 1;
-                        break;
-                    case SOUTH:
-                        new_start.X += 0;
-                        new_start.Y -= 1;
-                        break;
-                    case SOUTHWEST:
-                        new_start.X -= 1;
-                        new_start.Y -= 1;
-                        break;
-                    case WEST:
-                        new_start.X -= 1;
-                        new_start.Y += 0;
-                        break;
-                    case NORTHWEST:
-                        new_start.X -= 1;
-                        new_start.Y += 1;
-                        break;
-                }
+                new_start = moveByDirection(new_start, direction);
             }
             //try to add stream to this location and if it fails start trying to 'wiggle' around
             if (!addStreamSingular(new_start, direction) || overrideLegal)
@@ -236,7 +202,70 @@ namespace RockGarden
             return atomAt(spot).getResident().addStream(direction);
         }
 
-        private static int closestDirection(Point start, Point end)
+        /// <summary>
+        /// Determines if there is a stream between the two Residents.
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        public bool isStreamBetween(Resident start, Resident end)
+        {
+            int direction;
+            Resident tempRes;
+            Point floatingPoint = start.center;
+            while (!floatingPoint.Equals(end.center))
+            {
+                tempRes = atomAt(floatingPoint).getResident();
+                if (tempRes.hasStream)
+                {
+                    return true;
+                }
+                    direction = closestDirection(floatingPoint, end.center);
+                floatingPoint = moveByDirection(floatingPoint, direction);
+            }
+            //no stream found after all points between searched.
+            return false;
+        }
+        public static Point moveByDirection(Point basePoint, int direction)
+        {
+            switch (direction)
+            {
+                case NORTH:
+                    basePoint.X += 0;
+                    basePoint.Y += 1;
+                    break;
+                case NORTHEAST:
+                    basePoint.X += 1;
+                    basePoint.Y += 1;
+                    break;
+                case EAST:
+                    basePoint.X += 1;
+                    basePoint.Y += 0;
+                    break;
+                case SOUTHEAST:
+                    basePoint.X += 1;
+                    basePoint.Y -= 1;
+                    break;
+                case SOUTH:
+                    basePoint.X += 0;
+                    basePoint.Y -= 1;
+                    break;
+                case SOUTHWEST:
+                    basePoint.X -= 1;
+                    basePoint.Y -= 1;
+                    break;
+                case WEST:
+                    basePoint.X -= 1;
+                    basePoint.Y += 0;
+                    break;
+                case NORTHWEST:
+                    basePoint.X -= 1;
+                    basePoint.Y += 1;
+                    break;
+            }
+            return basePoint;
+        }
+        public static int closestDirection(Point start, Point end)
         {
             int endX_toOrigin = end.X - start.X;
             int endY_toOrigin = end.Y - start.Y;

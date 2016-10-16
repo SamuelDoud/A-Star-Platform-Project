@@ -10,12 +10,12 @@ namespace RockGarden
     
     class Gravel : Resident
     {
-        public bool isStream {get; set;}
         public List<int> connections = new List<int>();
         public static string terminus = "#", blank = ".";
         public Gravel() : base(1, 1, 1, true)
         {
             stringRepresentation = blank;
+            hasStream = false;
         }
         //it would make sense if the gravel is a stream that it has two "connections"
         //connections being which direction the gravel's stream faces
@@ -25,18 +25,14 @@ namespace RockGarden
         }
         public override bool addStream(int direction)
         {
+            hasStream = true;
             connections.Add(direction);
             newStringRepresentation();
             return true;
         }
-        public void addConnection(int direction)
-        {
-            this.connections.Add(direction);
-            newStringRepresentation();
-        }
         public List<int> getConnections()
         {
-            return this.connections;
+            return connections;
         }
         private void newStringRepresentation()
         {
