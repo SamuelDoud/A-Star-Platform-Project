@@ -204,27 +204,68 @@ namespace RockGarden
 
         /// <summary>
         /// Determines if there is a stream between the two Residents.
+        /// A line will be drawn from the centers of the residents and a stream will be searched
+        /// for along that path. Any stream on that path will cause this method to evaluate to 
+        /// true. If no streams are found, the method will return false.
         /// </summary>
-        /// <param name="start"></param>
-        /// <param name="end"></param>
-        /// <returns></returns>
+        /// <param name="start">The Resident from which the search will begin.</param>
+        /// <param name="end">The Resident on which the search will end.</param>
+        /// <returns>The existence of a stream between the two Residents.</returns>
         public bool isStreamBetween(Resident start, Resident end)
         {
+            return isSearchBetween(detectStream, start, end);
+        }
+        /// <summary>
+        /// Determines if there is a Rock between the two Residents.
+        /// A line will be drawn from the centers of the residents and a Rock will be searched
+        /// for along that path. Any Rock on that path will cause this method to evaluate to 
+        /// true. If no Rocks are found, the method will return false.
+        /// </summary>
+        /// <param name="start">The Resident from which the search will begin.</param>
+        /// <param name="end">The Resident on which the search will end.</param>
+        /// <returns>The existence of a Rock between the two Residents.</returns>
+        public bool isRockBetween(Resident start, Resident end)
+        {
+            return isSearchBetween(detectRock, start, end);
+        }
+        private bool isSearchBetween(Func<Resident, bool> detectionMethod, Resident start, Resident end)
+        {
+
             int direction;
             Resident tempRes;
             Point floatingPoint = start.center;
             while (!floatingPoint.Equals(end.center))
             {
                 tempRes = atomAt(floatingPoint).getResident();
-                if (tempRes.hasStream)
+                if (detectionMethod(tempRes))
                 {
                     return true;
                 }
-                    direction = closestDirection(floatingPoint, end.center);
+                direction = closestDirection(floatingPoint, end.center);
                 floatingPoint = moveByDirection(floatingPoint, direction);
             }
             //no stream found after all points between searched.
             return false;
+        }
+
+        /// <summary>
+        /// Returns a boolean on the existence of a rock on tempRes.
+        /// </summary>
+        /// <param name="tempRes">The Resident to be examined for a rock.</param>
+        /// <returns>A bool on the existence of a rock at tempRes.</returns>
+        private bool detectRock(Resident tempRes)
+        {            
+            return !tempRes.isGravel;
+        }
+
+        /// <summary>
+        /// Returns a boolean on the existence of a stream on tempRes.
+        /// </summary>
+        /// <param name="tempRes">The Resident to be examined for a stream.</param>
+        /// <returns>A bool on the existence of a stream at tempRes.</returns>
+        private bool detectStream(Resident tempRes)
+        {
+            return tempRes.hasStream;
         }
         public static Point moveByDirection(Point basePoint, int direction)
         {
