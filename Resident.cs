@@ -12,7 +12,9 @@ namespace RockGarden
         public bool isGravel { get; set; }
         public bool hasStream { get; set; }
         public int width, height, length;
-        public Point origin, center;
+        private Point backgroundOrigin;
+        public Point origin { get { return backgroundOrigin; } set { backgroundOrigin = value; setCenter(); } }
+        public Point center { get; set; }
         public string stringRepresentation = " ";
         /// <summary>
         /// Create a Resident.
