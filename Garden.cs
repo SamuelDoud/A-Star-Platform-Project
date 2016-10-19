@@ -42,16 +42,59 @@ namespace RockGarden
         /// </summary>
         public void fillWithGravel()
         {
+            //If bordered by Rock, set Heuristic to a low value
             Atom tempAtom;
+            Resident tempResident;
+            Point origin, ringOrigin;
+            int length, width;
+            List<Point> coordinatesRing;
+            List<Point> alreadyEncountered = new List<Point>();
             foreach (Point coordinate in getCoordinates())
             {
                 tempAtom = atomAt(coordinate);
-                if (tempAtom.getResident() == null)
+                if (!alreadyEncountered.Contains(coordinate))
                 {
-                    tempAtom.setResident(new Gravel(),
-                    coordinate);
+                    alreadyEncountered.Add(coordinate);
+                    if (tempAtom.getResident() == null)
+                    {
+                        tempAtom.setResident(new Gravel(),
+                        coordinate);
+                    }
+                    else
+                    {
+                        tempResident = tempAtom.getResident();
+                        origin = tempResident.origin;
+                        if (!alreadyEncountered.Contains(origin) && tempResident.ToString().Equals(Rock.rockString))
+                        {
+                            alreadyEncountered.Add(origin);
+                            ringOrigin = new Point(origin.X, origin.Y);
+                            length = tempResident.length + 2;
+                            width = tempResident.width + 2;
+                            coordinatesRing = getCoordinates(ringOrigin, width, length);
+                            for (int i = coordinatesRing.Count - 1; i >= 0; i--)
+                            {
+                                //check if the point is within the rock
+                                if (inGarden(coordinatesRing[i]) && !tempResident.isInResident(coordinatesRing[i]) && atomAt(coordinatesRing[i]).getResident().isGravel)
+                                {
+                                    //set this atom to the rock border heuristic cost
+                                    if (!alreadyEncountered.Contains(coordinatesRing[i]))
+                                    {
+                                        atomAt(coordinatesRing[i]).setResident(new Gravel(),
+                                        coordinate);
+                                        alreadyEncountered.Add(coordinatesRing[i]);
+                                    }
+                                    atomAt(coordinatesRing[i]).rockBorder();
+                                }
+
+                            }
+                        }
+                    }
                 }
             }
+        }
+        public bool inGarden(Point check)
+        {
+            return check.Y >= 0 && check.X >= 0 && check.X < width && check.Y < length;
         }
         /// <summary>
         /// Adds a Resident to the garden.
@@ -117,7 +160,7 @@ namespace RockGarden
                 return false;
             }
             //go through each Atom that contains this object
-            foreach (Point coordinate in getCoordinates(atomAt(spot).getPoint(),
+            foreach (Point coordinate in getCoordinates(atomAt(spot).getLocation(),
                 evictee.width, evictee.length))
             {
                 atomAt(coordinate).removeResident();
