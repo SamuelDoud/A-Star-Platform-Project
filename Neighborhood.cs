@@ -58,7 +58,7 @@ namespace RockGarden
             Point matchPoint;
             foreach(Atom atom in atoms)
             {
-                matchPoint = atom.getPoint();
+                matchPoint = atom.getLocation();
                 if (location.Equals(matchPoint))
                 {
                     return atom;

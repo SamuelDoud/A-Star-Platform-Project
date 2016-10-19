@@ -38,7 +38,7 @@ namespace RockGarden
             double score = ge.scoreGarden(testGarden);
             Console.WriteLine(ge.scoreGarden(testGarden));
             List<int[]> combos = new List<int[]>();
-            ge.combinations(ref combos, 0, 0, 3, 5, new int[3]);
+            GardenEvaluator.combinations(ref combos, 0, 0, 3, 5, new int[3]);
             
         }
         

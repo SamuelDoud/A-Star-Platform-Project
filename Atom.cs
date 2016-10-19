@@ -13,12 +13,15 @@ namespace RockGarden
         public static double defaultHeuristic = 1.0, defaultRockHeuristic = int.MaxValue, defaultRockBorderHeuristic = defaultHeuristic / 2;
         private Resident occupant;
         //describe where the location of the base of this Resident is
-        //can act as a key pair to compare objects
-        private int baseX;
-        private int baseY;
         private Point location;
         public double heuristic { get; set; }
-        public double rockHeuristic { get;
+        private double backgroundRockHueristic;
+        public double rockHeuristic
+        {
+            get
+            {
+                return backgroundRockHueristic;
+            }
             set
             {
                 setRockHeuristic();
@@ -69,7 +72,7 @@ namespace RockGarden
         {
             if (ToString().Equals(Rock.rockString))
             {
-                heuristic = rockHeuristic;
+                heuristic = backgroundRockHueristic;
             }
         }
         public override string ToString()

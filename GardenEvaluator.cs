@@ -68,7 +68,7 @@ namespace RockGarden
         /// <param name="average"></param>
         /// <param name="n"></param>
         /// <returns></returns>
-        private double maxStDev(double average, int n)
+        private static double maxStDev(double average, int n)
         {
             //max is if aveage is (n+m / 2) where n or m = 0
             //since we are squaring all variances, assume 0 is what compprises the entire list.
@@ -85,7 +85,7 @@ namespace RockGarden
         /// <param name="upper">One neighborhood to measure.</param>
         /// <param name="lower">The other neighborhood to measure.</param>
         /// <returns></returns>
-        private double balanceOfNeighborhoods(Neighborhood upper, Neighborhood lower)
+        private static double balanceOfNeighborhoods(Neighborhood upper, Neighborhood lower)
         {
             int nRocksUpper = upper.numberOfRocks();
             int nRocksLower = upper.numberOfRocks();
@@ -139,7 +139,7 @@ namespace RockGarden
         /// <param name="k">How many indecies to be selected.</param>
         /// <param name="n">How many indecies to select from.</param>
         /// <param name="combo">Internal parameter, pass "new int[k]"</param>
-        public void combinations(ref List<int[]> combinationIndecies, int startIndex, int level, int k, int n, int[] combo)
+        public static void combinations(ref List<int[]> combinationIndecies, int startIndex, int level, int k, int n, int[] combo)
         {
             if (level == k)
             {
