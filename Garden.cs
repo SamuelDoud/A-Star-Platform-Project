@@ -10,12 +10,14 @@ namespace RockGarden
         public const int NORTH = 0, NORTHEAST = 1, EAST = 2, SOUTHEAST = 3, SOUTH = 4, SOUTHWEST = 5, WEST = 6, NORTHWEST = 7;
         private int length, width;
         private Atom[,] grid;
+        public List<Resident> residentsList { get; set; }
 
         /// <summary>
         /// Create a Garden of length and width.
         /// </summary>
         public Garden(int length, int width)
         {
+            residentsList = new List<Resident>();
             this.length = length;
             this.width = width;
             grid = new Atom[width, length];
@@ -62,6 +64,7 @@ namespace RockGarden
         /// <returns>A boolean indicating whether the addition was successful or not.</returns>
         public bool addResident(Resident newNeighbor, Point spot, bool overwrite)
         {
+            residentsList.Add(newNeighbor);
             newNeighbor.origin = spot;
             List<Point> pointsToAddTo = getCoordinates(spot, newNeighbor.width, newNeighbor.length);
             //check if we can add the resident to the grid
@@ -107,6 +110,7 @@ namespace RockGarden
         public bool removeResident(Point spot)
         {
             Resident evictee = atomAt(spot).getResident();
+            residentsList.Remove(evictee);
             if (evictee == null)
             {
                 //no Resident occupies this space
@@ -401,7 +405,7 @@ namespace RockGarden
         ///
         /// </summary>
         /// <returns>A double from 0 (unique) to 1 (full symmetry) describing the symmetry</returns>
-        public double symmetric(int jigger)
+        public double symmetric(int jigger, double weight)
         {
             //Gravel matches aren't that big of a deal.
             //More interested in Rocks
@@ -421,7 +425,7 @@ namespace RockGarden
             products.Add(symmetric(northwest, southeast, jigger, true, false));
             products.Add(symmetric(northeast, southwest, jigger, true, false));
             double averageProduct = average(products); 
-            return averageProduct;
+            return averageProduct * weight;
         }
         public Neighborhood[] allHalves()
         {

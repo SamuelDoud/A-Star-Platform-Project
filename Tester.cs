@@ -18,10 +18,11 @@ namespace RockGarden
             this.length = length;
             testGarden = new Garden(length + 5, width);
             fillWithGravel();
-            addResident(new Rock(2, 4), new Point(2, 4), false);
-            addResident(new Rock(3, 4), new Point(2, 5), false);
+            addResident(new Rock(2, 2), new Point(12, 12), false);
+            addResident(new Rock(2, 2), new Point(2, 8), false);
+            addResident(new Rock(2, 2), new Point(15, 3), false);
             fillWithGravel();
-            addResident(new Rock(10, 10), new Point(3, 4), true);
+            //addResident(new Rock(10, 10), new Point(3, 4), true);
             fillWithGravel();
             //should be the only rock that is in the garden
             //removeResident(new Point(3, 5));
@@ -36,7 +37,11 @@ namespace RockGarden
             addRiver(starts, ends);
             double score = ge.scoreGarden(testGarden);
             Console.WriteLine(ge.scoreGarden(testGarden));
+            List<int[]> combos = new List<int[]>();
+            ge.combinations(ref combos, 0, 0, 3, 5, new int[3]);
+            
         }
+        
         public void addRiver(List<Point> starts, List<Point> ends)
         {
             testGarden.addRiver(starts, ends);

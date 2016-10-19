@@ -9,12 +9,20 @@ namespace RockGarden
 {
     class Resident
     {
-        public bool isGravel;
+        public bool isGravel { get; set; }
         public bool hasStream { get; set; }
         public int width, height, length;
         public Point origin, center;
         public string stringRepresentation = " ";
-        public Resident(int width, int length, int height,  bool isGravel)
+        /// <summary>
+        /// Create a Resident.
+        /// </summary>
+        /// <param name="width">How many Atoms in the X direction the Resident will occupy.</param>
+        /// <param name="length">How many Atoms in the Y direction the Resident will occupy.</param>
+        /// <param name="height">Not active.</param>
+        /// <param name="isGravel">Whether the Resident is a gravel subclass
+        /// (special rules apply).</param>
+        public Resident(int width, int length, int height, bool isGravel)
         {
             this.width = width;
             this.length = length;
@@ -22,14 +30,17 @@ namespace RockGarden
             this.isGravel = isGravel;
             setCenter();
         }
-        public bool gravel()
-        {
-            return isGravel;
-        }
+        /// <summary>
+        /// Gets the area that this Resident occupies.
+        /// </summary>
+        /// <returns>The area that this Resident occupies.</returns>
         public int getArea()
         {
             return width * length;
         }
+        /// <summary>
+        /// Internal method to set the center Point of this object.
+        /// </summary>
         private void setCenter()
         {
             double thisCenterX = (origin.X + width / 2.0);
@@ -56,11 +67,15 @@ namespace RockGarden
             double edgeDistance = rawDistance - distanceToEdge(-1 *slope) - other.distanceToEdge(slope);
             return edgeDistance; 
         }
-
+        /// <summary>
+        /// Distance to edge of the Resident from its center
+        /// </summary>
+        /// <param name="slope"></param>
+        /// <returns></returns>
         public double distanceToEdge(double slope)
         {
             double slopeFromCorners = length / width;
-            double centerY = origin.Y + length / 2.0, centerX = origin.X + width / 2.0;
+            double centerY = center.Y, centerX = center.Y;
             double yEdge, xEdge;
             if (Math.Abs(slope) < slopeFromCorners)
             {
@@ -76,15 +91,29 @@ namespace RockGarden
             }
             return Math.Sqrt(Math.Pow(centerX - xEdge, 2) + Math.Pow(centerY - yEdge, 2));
         }
+        /// <summary>
+        /// Does the point is passed within the Resident?
+        /// </summary>
+        /// <param name="check">The Point to be checked if it is withi the Resident.</param>
+        /// <returns>A bool wheteher the Point is within the Resident.</returns>
         public bool isInResident(Point check)
         {
             return (check.Y >= origin.Y && check.Y <= origin.Y + length &&
                     check.X >= origin.X && check.X <= origin.X + width);
         }
+        /// <summary>
+        /// By default, streams cannot be added to Residents. This can be overrode by subclasses.
+        /// </summary>
+        /// <param name="direction">The direction that the stream is going.</param>
+        /// <returns>The success of adding the stream. Will always evaluate to false.</returns>
         public virtual bool addStream(int direction)
         {
             return false;
         }
+        /// <summary>
+        /// Returns a single character as a string that represents the Resident.
+        /// </summary>
+        /// <returns>A single character string.</returns>
         public override string ToString()
         {
             return stringRepresentation;
