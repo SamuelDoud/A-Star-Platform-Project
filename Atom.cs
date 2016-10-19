@@ -9,34 +9,44 @@ namespace RockGarden
 {
     class Atom
     {
-        public static int defaultWeight = 1;
+        
+        public static double defaultHeuristic = 1.0, defaultRockHeuristic = int.MaxValue, defaultRockBorderHeuristic = defaultHeuristic / 2;
         private Resident occupant;
         //describe where the location of the base of this Resident is
         //can act as a key pair to compare objects
         private int baseX;
         private int baseY;
         private Point location;
-        private int weight { get; set; }
+        public double heuristic { get; set; }
+        public double rockHeuristic { get;
+            set
+            {
+                setRockHeuristic();
+            }
+        }
+        public double rockBorderHeuristic { get; set; }
+
 
         public Atom(Point location)
         {
-            initalize(location, defaultWeight);   
+            initalize(location, defaultHeuristic);   
         }
-        public Atom(Point location, int weight)
+        public Atom(Point location, int heuristic)
         {
-            initalize(location, weight);
+            initalize(location, heuristic);
         }
-        public void initalize(Point location, int weight)
+        public void initalize(Point location, double heuristic)
         {
             this.location = location;
-            this.weight = weight;
+            this.heuristic = heuristic;
+            rockHeuristic = defaultRockHeuristic;
+            rockBorderHeuristic = defaultRockBorderHeuristic;
             removeResident();
         }
         public void setResident(Resident member, Point spot)
         {
             occupant = member;
-            baseX = spot.X;
-            baseY = spot.Y;
+            setRockHeuristic();
         }
         public Point getLocation()
         {
@@ -45,24 +55,22 @@ namespace RockGarden
         public void removeResident()
         {
             occupant = null;
-            baseX = -1;
-            baseY = -1;
+            heuristic = defaultHeuristic;
         }
         public Resident getResident()
         {
             return occupant;
         }
-        public int getBaseX()
+        public void rockBorder()
         {
-            return baseX;
+            heuristic = defaultRockBorderHeuristic;
         }
-        public int getBaseY()
+        private void setRockHeuristic()
         {
-            return baseY;
-        }
-        public Point getPoint()
-        {
-            return new Point(baseX, baseY);
+            if (ToString().Equals(Rock.rockString))
+            {
+                heuristic = rockHeuristic;
+            }
         }
         public override string ToString()
         {
