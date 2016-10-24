@@ -36,7 +36,21 @@ namespace RockGarden
             double symmetry = toScore.symmetric(jigger, symmetryWeight);
             double balance = balanceOfGarden(toScore);
             double nonLinearity = scoreLinearity(toScore);
-            return symmetry * balance * nonLinearity;
+            double distanceBetweenAll = distanceScore(toScore);
+            return symmetry * balance * nonLinearity * distanceBetweenAll;
+        }
+        private double distanceScore(Garden toScore)
+        {
+            Resident[][] allRocks = NChooseK(toScore.getAllOfType(Rock.rockString), 2);
+            Resident[] combo;
+            List<double> allDistances = new List<double>();
+            double maxDistance = Math.Sqrt(Math.Pow(toScore.width, 2) + Math.Pow(toScore.length, 2));
+            for (int i = 0; i < allRocks.Length; i++)
+            {
+                combo = allRocks[i];
+                allDistances.Add(distance(combo[0].origin, combo[1].origin) / maxDistance);
+            }
+            return allDistances.Average();
         }
         /// <summary>
         /// Find how much any half the Garden dominates the other half.
@@ -108,22 +122,26 @@ namespace RockGarden
         /// <param name="k">How many Residents each selection should have.</param>
         /// <returns>All combinations of k Residents from residents List as a 2d array
         /// of Residents.</returns>
-        private Resident[,] NChooseK(List<Resident> residentsList, int k)
+        private Resident[][] NChooseK(List<Resident> residentsList, int k)
         {
             int n = residentsList.Count;
             if (k > n)
             {
-                return new Resident[0, k];
+                return new Resident[0][];
             }
             int selectionsNum = factorial(n) / (factorial(k) * factorial(n - k));
-            Resident[,] combinatorics = new Resident[selectionsNum, k];
+            Resident[][] combinatorics = new Resident[selectionsNum][];
+            for (int i = 0; i < selectionsNum; i++ )
+            {
+                combinatorics[i] = new Resident[k];
+            }
             List<int[]> combinationIndecies = new List<int[]>();
             combinations(ref combinationIndecies, 0, 0, k, n, new int[k]);
             for(int i = 0; i < combinationIndecies.Count; i++)
             {
                 for (int q = 0; q < k; q++)
                 {
-                    combinatorics[i, q] = residentsList[combinationIndecies[i][q]];
+                    combinatorics[i][q] = residentsList[combinationIndecies[i][q]];
                 }
             }
             return combinatorics;
