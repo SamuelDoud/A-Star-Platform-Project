@@ -8,7 +8,8 @@ namespace RockGarden
     {
         public static int n_directions = 8; //The four cardinal directions + NE, NW, SW, SE.
         public const int NORTH = 0, NORTHEAST = 1, EAST = 2, SOUTHEAST = 3, SOUTH = 4, SOUTHWEST = 5, WEST = 6, NORTHWEST = 7;
-        private int length, width;
+        public int length { get; set; }
+        public int width { get; set; }
         private Atom[,] grid;
         public List<Resident> residentsList { get; set; }
 
@@ -74,7 +75,7 @@ namespace RockGarden
                             for (int i = coordinatesRing.Count - 1; i >= 0; i--)
                             {
                                 //check if the point is within the rock
-                                if (inGarden(coordinatesRing[i]) && !tempResident.isInResident(coordinatesRing[i]) && atomAt(coordinatesRing[i]).getResident().isGravel)
+                                if (inGarden(coordinatesRing[i]) && !tempResident.isInResident(coordinatesRing[i]) && atomAt(coordinatesRing[i]).getResident() != null && atomAt(coordinatesRing[i]).getResident().isGravel)
                                 {
                                     //set this atom to the rock border heuristic cost
                                     if (!alreadyEncountered.Contains(coordinatesRing[i]))
@@ -107,8 +108,12 @@ namespace RockGarden
         /// <returns>A boolean indicating whether the addition was successful or not.</returns>
         public bool addResident(Resident newNeighbor, Point spot, bool overwrite)
         {
-            residentsList.Add(newNeighbor);
             newNeighbor.origin = spot;
+            if (!(inGarden(spot) && inGarden(new Point(spot.X + newNeighbor.width, spot.Y + newNeighbor.length))))
+            {
+                return false;
+            }
+            residentsList.Add(newNeighbor);
             List<Point> pointsToAddTo = getCoordinates(spot, newNeighbor.width, newNeighbor.length);
             //check if we can add the resident to the grid
             //return false if user does not want to overwrite anything that isn't gravel
@@ -138,7 +143,6 @@ namespace RockGarden
             }
             return true;
         }
-
         /// <summary>
         /// Removes any object that occupies this point on the grid.
         /// Will remove all instances of this object.
@@ -431,6 +435,10 @@ namespace RockGarden
         /// <returns>The Atom at the passed location.</returns>
         private Atom atomAt(Point location)
         {
+            if (!inGarden(location))
+            {
+                return new Atom(new Point(-1, -1));
+            }
             try
             {
                 return grid[location.X, location.Y];
@@ -438,10 +446,21 @@ namespace RockGarden
             catch (IndexOutOfRangeException)
             {
                 Console.WriteLine("This location: (" + location.X + ", " + location.Y + ") is not in the Garden.");
-                throw;
+                return new Atom(new Point(-1, -1));
             }
         }
-
+        public List<Resident> getAllOfType(string type)
+        {
+            List<Resident> residentOfType = new List<Resident>();
+            foreach(Resident testingThisResident in residentsList)
+            {
+                if(testingThisResident.ToString().Equals(type))
+                {
+                    residentOfType.Add(testingThisResident);
+                }
+            }
+            return residentOfType;
+        }
         /// <summary>
         /// Evaluates the garden for symmetry by checking for relative symmetry on 4 axis
         /// N-S, E-W, NE-SW, and NW-SE.
@@ -655,7 +674,7 @@ namespace RockGarden
                 //counting down as the (0, 0) is located in the bottom right corner
                 for (int x = 0; x < width; x++)
                 {
-                    gardenString += grid[x, y].ToString() + " ";
+                    gardenString += atomAt(new Point(x, y)).ToString() + " ";
                 }
                 //going to a new row so we will need a new line
                 gardenString += "\n" + y;

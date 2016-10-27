@@ -17,7 +17,7 @@ namespace RockGarden
             //Application.EnableVisualStyles();
             //Application.SetCompatibleTextRenderingDefault(false);
             //Application.Run(new Form1());
-            Tester test = new Tester(20,20);
+            Tester test = new Tester(25,20);
             Console.WriteLine(test.ToString());
             Console.ReadLine();
         }

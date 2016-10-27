@@ -106,7 +106,7 @@ namespace RockGarden
             int n_string = 0;
             foreach (Atom a in atoms)
             {
-                if (a.getResident().ToString().Equals(searchType))
+                if (a.getResident() != null && a.getResident().ToString().Equals(searchType))
                 {
                     n_string++;
                 }
