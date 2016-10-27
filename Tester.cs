@@ -12,8 +12,9 @@ namespace RockGarden
         private int width, length;
         public Tester(int length, int width)
         {
+            String s = "sss";
+            s.sub
             GardenEvaluator ge = new GardenEvaluator();
-            
             this.width = width;
             this.length = length;
             testGarden = new Garden(length, width);
@@ -39,7 +40,7 @@ namespace RockGarden
             Console.WriteLine(ge.scoreGarden(testGarden));
             List<int[]> combos = new List<int[]>();
             GardenEvaluator.combinations(ref combos, 0, 0, 3, 5, new int[3]);
-            Garden best = geneticSelection(testGarden, 20, 5, 20);
+            Garden best = geneticSelection(testGarden, 20, 3, 20);
             Console.WriteLine(ge.scoreGarden(best));
             Console.WriteLine(best.ToString());
             Console.ReadLine();
@@ -77,7 +78,7 @@ namespace RockGarden
             ancestors.Add(baseGarden);
             for (int i = 0; i < steps; i++)
             {
-                ancestors = nextStep(ancestors, numberOfChildren, movementMax, ge);
+                ancestors = nextStep(ancestors, numberOfChildren, movementMax - (i * movementMax / steps), ge);
             }
             return ancestors[0];
         }
@@ -137,8 +138,15 @@ namespace RockGarden
             {
                 child = makeChild(length, width, rocks, movementMax);
             }
+
+            Console.WriteLine(child);
+
             return child;
 
+        }
+        public Garden getBestGarden()
+        {
+            return null;
         }
     }
 }

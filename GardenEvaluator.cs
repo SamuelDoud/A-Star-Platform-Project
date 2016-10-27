@@ -37,7 +37,18 @@ namespace RockGarden
             double balance = balanceOfGarden(toScore);
             double nonLinearity = scoreLinearity(toScore);
             double distanceBetweenAll = distanceScore(toScore);
-            return symmetry * balance * nonLinearity * distanceBetweenAll;
+            double locationScoreAverage = locationScore(toScore);
+            return symmetry * balance * nonLinearity * distanceBetweenAll * locationScoreAverage;
+        }
+        private double locationScore(Garden toScore)
+        {
+            List<Resident> allRocks = toScore.getAllOfType(Rock.rockString);
+            List<double> locationScores = new List<double>();
+            foreach (Resident rock in allRocks)
+            {
+                locationScores.Add(rock.hueristic);
+            }
+            return locationScores.Average();
         }
         private double distanceScore(Garden toScore)
         {

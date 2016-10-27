@@ -16,6 +16,7 @@ namespace RockGarden
         public Point origin { get { return backgroundOrigin; } set { backgroundOrigin = value; setCenter(); } }
         public Point center { get; set; }
         public string stringRepresentation = " ";
+        public double hueristic { get; set; }
         /// <summary>
         /// Create a Resident.
         /// </summary>

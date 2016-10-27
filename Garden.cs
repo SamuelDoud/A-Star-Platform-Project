@@ -25,7 +25,9 @@ namespace RockGarden
             foreach (Point coordinate in getCoordinates())
             {
                 grid[coordinate.X, coordinate.Y] = new Atom(coordinate);
+                grid[coordinate.X, coordinate.Y].rockHeuristic = 1;
             }
+            setHeuristic();
         }
 
         /// <summary>
@@ -93,6 +95,33 @@ namespace RockGarden
                 }
             }
         }
+        private void setHeuristic()
+        {
+            double limX = 0.2;
+            double limY = 0.2;
+            Point temp;
+            for (int x = 0; x < limX * width; x++)
+            {
+                for(int y = 0; y < length; y++)
+                {
+                    temp = new Point(x, y);
+                    atomAt(temp).rockHeuristic = 0.1;
+                    temp = new Point(width - x, y);
+                    atomAt(temp).rockHeuristic = 0.1;
+                }
+            }
+            for (int y = 0; y < limY * length; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    temp = new Point(x, y);
+                    atomAt(temp).rockHeuristic = 0.1;
+                    temp = new Point(x, y - length);
+                    atomAt(temp).rockHeuristic = 0.1;
+                }
+            }
+
+        }
         public bool inGarden(Point check)
         {
             return check.Y >= 0 && check.X >= 0 && check.X < width && check.Y < length;
@@ -108,7 +137,9 @@ namespace RockGarden
         /// <returns>A boolean indicating whether the addition was successful or not.</returns>
         public bool addResident(Resident newNeighbor, Point spot, bool overwrite)
         {
+            
             newNeighbor.origin = spot;
+            newNeighbor.hueristic = atomAt(newNeighbor.center).rockHeuristic;
             if (!(inGarden(spot) && inGarden(new Point(spot.X + newNeighbor.width, spot.Y + newNeighbor.length))))
             {
                 return false;
@@ -653,22 +684,24 @@ namespace RockGarden
         /// Get a string representation of the Rock Garden.
         /// </summary>
         /// <returns>A string which gives an ASCII art view of the rock garden</returns>
-        public override string ToString()
+        public string ToString(bool readable)
         {
-            
-            string gardenString = "   ";
+            string gardenString = readable ? "   ": "";
             string bottom = "   ";
-            for (int i = 0; i < width; i++)
+            if (readable)
             {
-
-                gardenString += i.ToString();
-                if (i < 10)
+                for (int i = 0; i < width; i++)
                 {
-                    gardenString += " ";
+                    gardenString += i.ToString();
+                    if (i < 10)
+                    {
+                        gardenString += " ";
+                    }
+                    bottom += "__";
                 }
-                bottom += "__";
+
+                gardenString += "\n" + bottom + "\n" + length + (length > 10 ? "| " : " | ");
             }
-            gardenString += "\n" + bottom + "\n" + length + ( length > 10 ?"| ": " | ");
             for (int y = length - 1; y >= 0; y-- )
             {
                 //counting down as the (0, 0) is located in the bottom right corner
@@ -677,14 +710,26 @@ namespace RockGarden
                     gardenString += atomAt(new Point(x, y)).ToString() + " ";
                 }
                 //going to a new row so we will need a new line
-                gardenString += "\n" + y;
-                if (y < 10)
+
+                gardenString += "\n" + (readable ? y.ToString() : "");
+                if (readable)
                 {
-                    gardenString += " ";
+                    if (y < 10)
+                    {
+                        gardenString += " ";
+                    }
+                    gardenString += "| ";
                 }
-                gardenString += "| ";
             }
             return gardenString;
+        }
+        /// <summary>
+        /// ASCII method to alloww for printing of a readable graph
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return ToString(false);
         }
     }
 }
