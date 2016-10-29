@@ -2,7 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class PathFinding : MonoBehaviour {
+public class PathFinding : MonoBehaviour
+{
 
     public Transform seeker, target;
 

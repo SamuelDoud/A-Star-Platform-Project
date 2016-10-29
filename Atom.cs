@@ -10,12 +10,13 @@ namespace RockGarden
     class Atom
     {
         
-        public static double defaultHeuristic = 1.0, defaultRockHeuristic = int.MaxValue, defaultRockBorderHeuristic = defaultHeuristic / 2;
+        public static double defaultHeuristic = 1.0, defaultRockHeuristic = int.MaxValue, defaultRockBorderHeuristic = defaultHeuristic / 2, defaultGCost = 1.0;
         private Resident occupant;
         //describe where the location of the base of this Resident is
         private Point location;
         public double heuristic { get; set; }
         private double backgroundRockHueristic;
+        public Atom parent { get; set; }
         public double rockHeuristic
         {
             get
@@ -28,7 +29,14 @@ namespace RockGarden
             }
         }
         public double rockBorderHeuristic { get; set; }
-
+        public double gCost { get; set; }
+        public double fCost
+        {
+            get
+            {
+                return rockHeuristic + gCost;
+            }
+        }
 
         public Atom(Point location)
         {
@@ -44,6 +52,7 @@ namespace RockGarden
             this.heuristic = heuristic;
             rockHeuristic = defaultRockHeuristic;
             rockBorderHeuristic = defaultRockBorderHeuristic;
+            gCost = defaultGCost;
             removeResident();
         }
         public void setResident(Resident member, Point spot)

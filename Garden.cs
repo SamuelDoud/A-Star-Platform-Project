@@ -246,6 +246,88 @@ namespace RockGarden
                 runs++;
             }
         }
+        public void addStreamAStar(Point start, Point end)
+        {
+            Atom startAtom = atomAt(start);
+            Atom targetAtom = atomAt(end);
+            List<Atom> openSet = new List<Atom>();
+            HashSet<Atom> closeSet = new HashSet<Atom>();
+            openSet.Add(startAtom);
+
+            while (openSet.Count > 0)
+            {
+                Atom currentAtom = openSet[0];
+                for (int i = 1; i < openSet.Count; i++)
+                {
+                    if (openSet[i].fCost < currentAtom.fCost || openSet[i].fCost == currentAtom.fCost
+                        && openSet[i].rockHeuristic < currentAtom.rockHeuristic)
+                    {
+                        currentAtom = openSet[i];
+                    }
+                }
+
+                openSet.Remove(currentAtom);
+                closeSet.Add(currentAtom);
+
+                if (currentAtom == targetAtom)
+                {
+                    TracePath(startAtom, targetAtom);
+                    return;
+                }
+
+                foreach (Atom neighbor in getNeighbors(currentAtom))
+                {
+                    if (neighbor == null || neighbor.getResident() == null || (!neighbor.getResident().isGravel || closeSet.Contains(neighbor)))
+                    {
+                        continue;
+                    }
+
+                    double newMovementCostToNeighbor = currentAtom.gCost + getDistance(currentAtom, neighbor);
+                    if (newMovementCostToNeighbor < neighbor.gCost || !openSet.Contains(neighbor))
+                    {
+                        neighbor.gCost = newMovementCostToNeighbor;
+                        neighbor.rockHeuristic = getDistance(neighbor, targetAtom);
+                        neighbor.parent = currentAtom;
+
+                        if (!openSet.Contains(neighbor))
+                        {
+                            openSet.Add(neighbor);
+                        }
+                    }
+                }
+            }
+        }
+        private List<Atom> getNeighbors(Atom MrRodgers)
+        {
+            List<Atom> wontYouBeMyNeighbor = new List<Atom>();
+            Point hisHome = MrRodgers.getLocation();
+            for (int xDelta = -1; xDelta <= 1; xDelta++)
+            {
+                for (int yDelta = -1; yDelta <= 1; yDelta++)
+                {
+                    if (yDelta == 0 && xDelta == 0)
+                    {
+                        continue;
+                    }
+                    wontYouBeMyNeighbor.Add(atomAt(new Point(hisHome.X + xDelta, hisHome.Y + yDelta)));
+                }
+            }
+            return wontYouBeMyNeighbor;
+        }
+        private void TracePath(Atom startNode, Atom endNode)
+        {
+            Atom last = endNode;
+            Atom next;
+            while(last.parent != null)
+            {
+                next = last.parent;
+                addStreamSingular(last.getLocation(), closestDirection(last.getLocation(), next.getLocation()));
+                addStreamSingular(next.getLocation(), closestDirection(next.getLocation(), last.getLocation()));
+                last = next;
+            }
+
+            ///Instantiate(cube, nodes in the path)
+        }
         private bool directionSwitch(ref Point new_start, int direction, bool positive, int delta)
         {
             if (positive)
@@ -731,5 +813,14 @@ namespace RockGarden
         {
             return ToString(false);
         }
+        private static double getDistance(Point start, Point end)
+        {
+            return Math.Sqrt(Math.Pow(start.X - end.X, 2) + Math.Pow(start.Y - end.Y, 2));
+        }
+        private static double getDistance(Atom start, Atom end)
+        {
+            return getDistance(start.getLocation(), end.getLocation());
+        }
     }
+
 }

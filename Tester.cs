@@ -12,8 +12,6 @@ namespace RockGarden
         private int width, length;
         public Tester(int length, int width)
         {
-            String s = "sss";
-            s.sub
             GardenEvaluator ge = new GardenEvaluator();
             this.width = width;
             this.length = length;
@@ -28,7 +26,6 @@ namespace RockGarden
             //should be the only rock that is in the garden
             //removeResident(new Point(3, 5));
             fillWithGravel();
-            addStream(new Point(12, 2), new Point (2, 19));
             List<Point> starts = new List<Point>();
             List<Point> ends = new List<Point>();
             starts.Add(new Point(0, 0));
@@ -43,7 +40,9 @@ namespace RockGarden
             Garden best = geneticSelection(testGarden, 20, 3, 20);
             Console.WriteLine(ge.scoreGarden(best));
             Console.WriteLine(best.ToString());
-            Console.ReadLine();
+            best.addStreamAStar(new Point(12, 2), new Point(2, 19));
+            //Console.ReadLine();
+
         }
         
         public void addRiver(List<Point> starts, List<Point> ends)
@@ -66,7 +65,10 @@ namespace RockGarden
         {
             testGarden.addStream(start, end);
         }
-
+        public void addStreamAStar(Point start, Point end)
+        {
+            testGarden.addStreamAStar(start, end);
+        }
         public override string ToString()
         {
             return testGarden.ToString();
