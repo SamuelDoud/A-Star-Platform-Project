@@ -1,0 +1,6 @@
+C:\Users\Samuel\Source\Repos\A-Star-Platform-Project\bin\Debug\WindowsApplication.exe.config
+C:\Users\Samuel\Source\Repos\A-Star-Platform-Project\bin\Debug\WindowsApplication.exe
+C:\Users\Samuel\Source\Repos\A-Star-Platform-Project\bin\Debug\WindowsApplication.pdb
+C:\Users\Samuel\Source\Repos\A-Star-Platform-Project\obj\x86\Debug\RockGarden.csprojResolveAssemblyReference.cache
+C:\Users\Samuel\Source\Repos\A-Star-Platform-Project\obj\x86\Debug\WindowsApplication.exe
+C:\Users\Samuel\Source\Repos\A-Star-Platform-Project\obj\x86\Debug\WindowsApplication.pdb

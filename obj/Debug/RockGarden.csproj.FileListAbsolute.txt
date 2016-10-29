@@ -1,0 +1,2 @@
+C:\Users\Samuel\Desktop\RockGarden\bin\Debug\RockGarden.exe.config
+C:\Users\Samuel\Source\Repos\A-Star-Platform-Project\bin\Debug\RockGarden.exe.config
