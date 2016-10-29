@@ -100,14 +100,18 @@ namespace RockGarden
             double limX = 0.2;
             double limY = 0.2;
             Point temp;
+            foreach (Atom a in grid)
+            {
+                a.rockBorderHeuristic = 1;
+            }
             for (int x = 0; x < limX * width; x++)
             {
                 for(int y = 0; y < length; y++)
                 {
                     temp = new Point(x, y);
-                    atomAt(temp).rockHeuristic = 0.1;
+                    atomAt(temp).rockBorderHeuristic = 0.1;
                     temp = new Point(width - x, y);
-                    atomAt(temp).rockHeuristic = 0.1;
+                    atomAt(temp).rockBorderHeuristic = 0.1;
                 }
             }
             for (int y = 0; y < limY * length; y++)
@@ -115,9 +119,9 @@ namespace RockGarden
                 for (int x = 0; x < width; x++)
                 {
                     temp = new Point(x, y);
-                    atomAt(temp).rockHeuristic = 0.1;
+                    atomAt(temp).rockBorderHeuristic = 0.1;
                     temp = new Point(x, y - length);
-                    atomAt(temp).rockHeuristic = 0.1;
+                    atomAt(temp).rockBorderHeuristic = 0.1;
                 }
             }
 
@@ -546,7 +550,7 @@ namespace RockGarden
         /// </summary>
         /// <param name="location">The location of the Atom desired.</param>
         /// <returns>The Atom at the passed location.</returns>
-        private Atom atomAt(Point location)
+        public Atom atomAt(Point location)
         {
             if (!inGarden(location))
             {
